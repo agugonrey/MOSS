@@ -18,9 +18,9 @@
 #' @param tol Convergence tolerance for the sparse SVD algorithm. Numeric. Defaults to 0.001.
 #' @param alpha.f Elastic net mixture parameter at the features level. Measures the compromise between lasso (alpha = 1) and ridge (alpha = 0) types of sparsity. Numeric. Deafaults to 1.
 #' @param alpha.s Elastic net mixture parameter at the subjects level. Defaults to alpha.s = 1.
-#' @param center. Should O be centered? Logical. Defaults to TRUE.
-#' @param scale. Should O be scaled? Logical. Defaults to TRUE.
-#' @param approx. Should we use standard SVD or random approximations? Defaults to FALSE. If TRUE & is(O,'matrix') == TRUE, irlba is called. If TRUE & is(O, "FBM") == TRUE, big_randomSVD is called.
+#' @param center.arg Should O be centered? Logical. Defaults to TRUE.
+#' @param scale.arg Should O be scaled? Logical. Defaults to TRUE.
+#' @param approx.arg Should we use standard SVD or random approximations? Defaults to FALSE. If TRUE & is(O,'matrix') == TRUE, irlba is called. If TRUE & is(O, "FBM") == TRUE, big_randomSVD is called.
 #' @param svd.0 List containing an initial SVD. Defaults to NULL.
 #' @param s.values Should the singular values be calculated? Logical. Defaults to TRUE.
 #' @param ncores Number of cores used by big_randomSVD. Default does not use parallelism. Ignored when class(O)!=FBM.
@@ -45,15 +45,15 @@
 #' X <- sim_blocks$`Block 3`
 #'
 #' #Equal to svd solution: exact singular vectors and values.
-#' out <- ssvdEN(X,approx. = FALSE)
+#' out <- ssvdEN(X,approx.arg = FALSE)
 #' 
 #' \dontrun{
 #' #Uses irlba to get approximated singular vectors and values.
 #' library(irlba)
-#' out <- ssvdEN(X, approx. = TRUE)
+#' out <- ssvdEN(X, approx.arg = TRUE)
 #' #Uses bigstatsr to get approximated singular vectors and values of a Filebacked Big Matrix.
 #' library(bigstatsr)
-#' out <- ssvdEN(as_FBM(X), approx. = TRUE)
+#' out <- ssvdEN(as_FBM(X), approx.arg = TRUE)
 #' }
 #' 
 #' #Sampling a number of subjects and features for a fix sparsity degree.
@@ -109,10 +109,10 @@
 #' colSums(out$sparse$u!=0)
 #' colSums(out$sparse$v!=0)
 ssvdEN <- function (O, n.PC = 1, dg.spar.features = NULL, dg.spar.subjects = NULL,maxit = 500, tol = 0.001,
-                    scale. = TRUE, center. = TRUE, approx. = FALSE, alpha.f = 1, alpha.s = 1, svd.0 = NULL,s.values=TRUE, ncores=1) {
+                    scale.arg = TRUE, center.arg = TRUE, approx.arg = FALSE, alpha.f = 1, alpha.s = 1, svd.0 = NULL,s.values=TRUE, ncores=1) {
 
   #Checking if the right packages are present to handle approximated SVDs.
-  if (approx. == TRUE) {
+  if (approx.arg == TRUE) {
     if (is(O, "FBM") == TRUE)  {if (!requireNamespace("bigstatsr",quietly = TRUE)) stop("Package bigstatsr needs to be installed to handle FBM objects.")}
     else {if (!requireNamespace("irlba",quietly = TRUE)) stop("Package irlba needs to be installed to get fast truncated SVD solutions.")}
   }
@@ -127,15 +127,15 @@ ssvdEN <- function (O, n.PC = 1, dg.spar.features = NULL, dg.spar.subjects = NUL
   if (is.null(dg.spar.features) == TRUE) dg.spar.features <- p
 
   if (is.null(svd.0) == TRUE) {
-    if (approx. == TRUE) {
-      if (is(O, "FBM") == TRUE) s <- bigstatsr::big_randomSVD(O, fun.scaling = bigstatsr::big_scale(center = center., scale = scale.), k = n.PC, ncores = ncores)
+    if (approx.arg == TRUE) {
+      if (is(O, "FBM") == TRUE) s <- bigstatsr::big_randomSVD(O, fun.scaling = bigstatsr::big_scale(center = center.arg, scale = scale.arg), k = n.PC, ncores = ncores)
       else {
-        O <- scale(O, center=center., scale = scale.)
+        O <- scale(O, center=center.arg, scale = scale.arg)
         s <- irlba::irlba(O, nu = n.PC, nv = n.PC)[c("u","v","d")]
       }
     }
     else {
-      O <- scale(O, center=center., scale = scale.)
+      O <- scale(O, center=center.arg, scale = scale.arg)
       s <- svd(O, nu = n.PC, nv = n.PC); s$d <- s$d[1 : n.PC]
     }
   }
@@ -153,7 +153,7 @@ ssvdEN <- function (O, n.PC = 1, dg.spar.features = NULL, dg.spar.subjects = NUL
       a <- abs(y)
       z <- sort(a)
 
-      #Mapping dg to lambda scale.
+      #Mapping dg to lambda scale.arg
       lambda <- z[dg.spar]
       b <- a - lambda * alpha
       y.out <- sign(y) * ifelse(b > 0, b, 0) / (1 + (1 - alpha) * lambda)
