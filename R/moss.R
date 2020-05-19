@@ -82,7 +82,7 @@
 #' @examples
 #' #Example1: sparse PCA of a list of omic blocks.
 #' library("MOSS")
-#' sim_data <- simulating_data()
+#' sim_data <- simulate_data()
 #' set.seed(43)
 #'
 #' #Extracting simulated omic blocks.
