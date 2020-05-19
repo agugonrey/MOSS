@@ -1,5 +1,5 @@
 # Function to infer clusters separation using the sillouthe index (from Taskesen et al ).
-dbscan_SH <- function(data,eps=NULL,showplot=F,prop_outliers=.1,eps_res=500,eps_range=NULL){
+dbscan_SH <- function(data,eps=NULL,showplot=F,prop_outliers=0.1,eps_res=500,eps_range=NULL){
   data<-data.frame(data)
   if(is.null(eps)){
     cat("Optimising eps: ")
