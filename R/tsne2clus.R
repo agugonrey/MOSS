@@ -3,7 +3,7 @@
 #' Finds clusters on a 2 dimensional map using DBSCAN.
 #'
 #' The function takes the outcome of pca2tsne (or a list containing any two-columns matrix) and finds clusters via DBSCAN.
-#'   It extends code from the MEREDITH and clValid R packages to tune DBSCAN parameters with Silhouette or Biological Homogeneity indexes.
+#'  It extends code from the MEREDITH and clValid R packages to tune DBSCAN parameters with Silhouette or Biological Homogeneity indexes.
 #' @param S.tsne Outcome of function "pca2tsne"
 #' @param ann Subjects' annotation data. An incidence matrix assigning subjects to classes of biological relevance. Meant to tune cluster assignation via BHI. If ann=NULL, the number of clusters is tuned with the Silhouette index instead of BHI. Defaults to NULL.
 #' @param labels Character vector with labels describing subjects. Meant to assing aesthetics to the visual display of clusters.
