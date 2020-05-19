@@ -53,7 +53,7 @@
 #' library("MOSS")
 #'
 #' #Extracting simulated omic blocks.
-#' sim_blocks <- simulating_data()$sim_blocks
+#' sim_blocks <- simulate_data()$sim_blocks
 #' X <- sim_blocks$`Block 3`
 #'
 #' #Tuning sparsity degree for features.
@@ -68,7 +68,7 @@
 #' set.seed(43)
 #'
 #' #Extracting simulated omic blocks.
-#' sim_data <- simulating_data()
+#' sim_data <- simulate_data()
 #' sim_blocks <- sim_data$sim_blocks
 #' 
 #' #Extracting subjects and features labels.

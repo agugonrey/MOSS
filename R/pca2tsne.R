@@ -13,7 +13,7 @@
 #' \dontrun{
 #' library("MOSS")
 #' library("Rtsne")
-#' sim_blocks <-simulating_data()$sim_blocks
+#' sim_blocks <-simulate_data()$sim_blocks
 #' 
 #' #Example of pca2tsne usage.
 #' Z <- pca2tsne(sim_blocks$`Block 3`,perp=50,n.samples=1,n.iter=1e3)$Y
