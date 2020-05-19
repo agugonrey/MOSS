@@ -1,5 +1,5 @@
 # Function to infer clusters separation by maximizing the Biological Homogeneity Index
-dbscan_BHI <- function(data,eps=NULL,minPts=5,prop_outliers=.1,eps_res=500,eps_range=NULL,annot,plot=F){
+dbscan_BHI <- function(data,eps=NULL,minPts=5,prop_outliers=0.1,eps_res=500,eps_range=NULL,annot,plot=F){
   data<-data.frame(data)
   if(is.null(eps)){
     cat("Optimising eps: ")
