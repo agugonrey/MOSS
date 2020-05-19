@@ -61,7 +61,7 @@
 #' #Example of usage within moss.
 #' library("MOSS")
 #' set.seed(43)
-#' sim_blocks <- simulating_data()$sim_blocks
+#' sim_blocks <- simulate_data()$sim_blocks
 #' moss(sim_blocks[-4],
 #'      tSNE=list(perp=50,
 #'                n.samples=1,
