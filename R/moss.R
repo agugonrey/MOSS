@@ -477,7 +477,7 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
                     scale= scale.arg,center = scale.arg,
                     dg.grid.right = dg.grid.right,dg.grid.left = dg.grid.left,
                     n.PC = K.Y,alpha.f = alpha.right,alpha.s = alpha.left,
-                    plot = plot,approx = approx,
+                    plot = plot,approx.arg = approx,
                     verbose = verbose,left.lab = left.lab,right.lab = right.lab)
 
     out$sparse <- aux.svd$SVD
