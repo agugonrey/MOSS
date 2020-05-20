@@ -103,11 +103,11 @@ ssvdEN_sol_path <- function(O, center=TRUE,scale=TRUE, dg.grid.right = 1 : (ncol
   
   #Checking if the right packages are present to handle approximated SVDs.
   if (approx. == TRUE) {
-    if (is(O, "FBM") == TRUE )  {if (!requireNamespace("bigstatsr",quietly = TRUE)) stop("Package bigstatsr needs to be installed to handle FBM objects.")}
+    if (inherits(O, "FBM") == TRUE )  {if (!requireNamespace("bigstatsr",quietly = TRUE)) stop("Package bigstatsr needs to be installed to handle FBM objects.")}
     else {if (!requireNamespace("irlba",quietly = TRUE)) stop("Package irlba needs to be installed to get fast truncated SVD solutions.")}
   }
   
-  if (any(sapply(c("matrix","array","FBM"),function(x) is(O,x))) == FALSE) stop("Input needs to be a matrix or FBM.")
+  if (any(sapply(c("matrix","array","FBM"),function(x) inherits(O,x))) == FALSE) stop("Input needs to be a matrix or FBM.")
   if (!(any(dg.grid.right %in% c(1:ncol(O))) | is.null(dg.grid.right)) |
       !(any(dg.grid.left %in% c(1:nrow(O))) | is.null(dg.grid.left)))
     stop("Degrees of sparsity for ",right.lab," and ",left.lab,
@@ -122,7 +122,7 @@ ssvdEN_sol_path <- function(O, center=TRUE,scale=TRUE, dg.grid.right = 1 : (ncol
   
   if (is.null(svd.0) == TRUE) {
     if (approx. == TRUE) {
-      if (is(O, "FBM") == TRUE) s <- bigstatsr::big_randomSVD(O, fun.scaling = bigstatsr::big_scale(center = center, scale = scale), k = n.PC, ncores = ncores)
+      if (inherits(O, "FBM") == TRUE) s <- bigstatsr::big_randomSVD(O, fun.scaling = bigstatsr::big_scale(center = center, scale = scale), k = n.PC, ncores = ncores)
       else {
         O <- scale(O, center=center, scale = scale)
         s <- irlba::irlba(O, nu = n.PC, nv = n.PC)[c("u","v","d")]
