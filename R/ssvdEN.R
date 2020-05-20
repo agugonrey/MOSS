@@ -121,9 +121,10 @@ ssvdEN <- function (O, n.PC = 1, dg.spar.features = NULL, dg.spar.subjects = NUL
   n <- nrow(O)
   p <- ncol(O)
 
-  #If dg.s = NULL, get full subjects' scores.
+  #If dg.spar.subjects = NULL, get full subjects' scores.
   if (is.null(dg.spar.subjects) == TRUE) dg.spar.subjects <- n
 
+  #If dg.spar.features = NULL, get full features' scores.
   if (is.null(dg.spar.features) == TRUE) dg.spar.features <- p
 
   if (is.null(svd.0) == TRUE) {
