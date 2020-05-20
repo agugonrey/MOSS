@@ -113,7 +113,7 @@ ssvdEN <- function (O, n.PC = 1, dg.spar.features = NULL, dg.spar.subjects = NUL
 
   #Checking if the right packages are present to handle approximated SVDs.
   if (approx.arg == TRUE) {
-    if (is(O, "FBM") == TRUE)  {if (!requireNamespace("bigstatsr",quietly = TRUE)) stop("Package bigstatsr needs to be installed to handle FBM objects.")}
+    if (inherits(O, "FBM") == TRUE)  {if (!requireNamespace("bigstatsr",quietly = TRUE)) stop("Package bigstatsr needs to be installed to handle FBM objects.")}
     else {if (!requireNamespace("irlba",quietly = TRUE)) stop("Package irlba needs to be installed to get fast truncated SVD solutions.")}
   }
   
@@ -128,7 +128,7 @@ ssvdEN <- function (O, n.PC = 1, dg.spar.features = NULL, dg.spar.subjects = NUL
 
   if (is.null(svd.0) == TRUE) {
     if (approx.arg == TRUE) {
-      if (is(O, "FBM") == TRUE) s <- bigstatsr::big_randomSVD(O, fun.scaling = bigstatsr::big_scale(center = center.arg, scale = scale.arg), k = n.PC, ncores = ncores)
+      if (inherits(O, "FBM") == TRUE) s <- bigstatsr::big_randomSVD(O, fun.scaling = bigstatsr::big_scale(center = center.arg, scale = scale.arg), k = n.PC, ncores = ncores)
       else {
         O <- scale(O, center=center.arg, scale = scale.arg)
         s <- irlba::irlba(O, nu = n.PC, nv = n.PC)[c("u","v","d")]
