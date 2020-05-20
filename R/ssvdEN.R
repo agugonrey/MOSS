@@ -198,8 +198,8 @@ ssvdEN <- function (O, n.PC = 1, dg.spar.features = NULL, dg.spar.subjects = NUL
                      apply(s$u, 2, function(x) sign(utils::head(O[O[,1] != 0,1], 1))), 
                    `*`)
       
-      #Calculating convergence rate.
-      delta_u <- 1 - abs(crossprod(u, s$u))
+      #Calculating convergence rate in terms of Frobenious norm.
+      delta_u <- norm(u - s$u, "f") / (n * n.PC)
       iter <- iter + 1
     }
     if (iter >= maxit) warning("Maximum number of iterations reached before convergence: solution may not be optimal. Consider increasing 'maxit'.")
