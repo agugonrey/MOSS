@@ -47,7 +47,7 @@
 #' @param scale.arg Should the omic blocks be centered and scaled? Logical. Defaults to TRUE.
 #' @param norm.arg Should omic blocks be normalized? Logical. Defaults to TRUE.
 #' @param plot Should results be plotted? Logical. Defaults to FALSE.
-#' @param approx Should we use standard SVD or random approximations? Defaults to FALSE. If TRUE and at least one block is of class 'matrix', irlba is called. If TRUE & is(O,'FBM')==TRUE, big_randomSVD is called.
+#' @param approx.arg Should we use standard SVD or random approximations? Defaults to FALSE. If TRUE and at least one block is of class 'matrix', irlba is called. If TRUE & is(O,'FBM')==TRUE, big_randomSVD is called.
 #' @return Returns a list with the results of the sparse generalized SVD. If \emph{plot}=TRUE, a series of plots is generated as well.
 #' \itemize{
 #' \item \emph{\strong{B:}}  The object of the (sparse) SVD. Depending of the method used, B can be a extended matrix of normalized omic blocks, a variance-covariance matrix, or a matrix of regression coeficients.
@@ -75,7 +75,7 @@
 #'  
 #' }
 #' @references \itemize{
-#'    \item Shen, Haipeng, and Jianhua Z. Huang. 2008. Sparse Principal Component Analysis via Regularized Low Rank Matrix Approximation. Journal of Multivariate Analysis 99 (6). Academic Press: 1015_34. 
+#'    \item Shen, Haipeng, and Jianhua Z. Huang. 2008. Sparse Principal Component Analysis via Regularized Low Rank Matrix approximation. Journal of Multivariate Analysis 99 (6). Academic Press: 1015_34. 
 #'    \item Baglama, Jim, Lothar Reichel, and B W Lewis. 2018. Irlba: Fast Truncated Singular Value Decomposition and Principal Components Analysis for Large Dense and Sparse Matrices.
 #'  }
 #' @export
@@ -176,7 +176,7 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
                    K.X=5,K.Y=K.X,verbose=TRUE,ncores=1,
                    dg.grid.left = NULL, dg.grid.right=NULL,
                    alpha.right=1,alpha.left=1,plot=FALSE,clus=FALSE,
-                   clus.lab=NULL,tSNE=NULL,axes.pos=1:K.Y,approx=FALSE) {
+                   clus.lab=NULL,tSNE=NULL,axes.pos=1:K.Y,approx.arg=FALSE) {
   
   #Inputs need to be a list of data matrices.
   if(!is.list(data.blocks)) stop("Input has to be a list with omic blocks.")
@@ -221,7 +221,7 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
   }
   
   #Checking if the right packages are present to handle approximated SVDs.
-  if (approx == TRUE) {
+  if (approx.arg == TRUE) {
     if (any(block.class == "FBM"))  {if (!requireNamespace("bigstatsr",quietly = TRUE)) stop("Package 'bigstatsr' needs to be installed to handle FBM objects.")}
     else {if (!requireNamespace("irlba",quietly = TRUE)) stop("Package 'irlba' needs to be installed to get fast truncated SVD solutions.")}
   }
@@ -477,7 +477,7 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
                     scale= scale.arg,center = scale.arg,
                     dg.grid.right = dg.grid.right,dg.grid.left = dg.grid.left,
                     n.PC = K.Y,alpha.f = alpha.right,alpha.s = alpha.left,
-                    plot = plot,approx.arg = approx,
+                    plot = plot,approx = approx.arg,
                     verbose = verbose,left.lab = left.lab,right.lab = right.lab)
 
     out$sparse <- aux.svd$SVD
