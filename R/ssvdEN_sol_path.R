@@ -29,7 +29,7 @@
 #' @param plot Should we plot the solution path? Logical. Defaults to FALSE
 #' @param right.lab Label for the features level. Character. Defaults to 'features'.
 #' @param left.lab Label for the subjects level. Character. Defaults to 'subjects'.
-#' @param approx. Should we use standard SVD or random approximations? Defaults to FALSE. If TRUE & is(O,'matrix') == TRUE, irlba is called. If TRUE & is(O, "FBM") == TRUE, big_randomSVD is called.
+#' @param apporx.arg Should we use standard SVD or random approximations? Defaults to FALSE. If TRUE & is(O,'matrix') == TRUE, irlba is called. If TRUE & is(O, "FBM") == TRUE, big_randomSVD is called.
 #' @param verbose Should we print messages?. Logical. Defaults to TRUE.
 #' @return \itemize{
 #' A list with the results of the (sparse) SVD and (if argument 'plot'=TRUE) the corresponding graphical displays.
@@ -98,11 +98,11 @@
 #' }
 
 ssvdEN_sol_path <- function(O, center=TRUE,scale=TRUE, dg.grid.right = 1 : (ncol(O)-1), dg.grid.left=NULL,n.PC=1, svd.0 = NULL,
-                            alpha.f=1,alpha.s=1,maxit=500,tol=1E-03,approx.=FALSE,plot=FALSE,ncores=1,
+                            alpha.f=1,alpha.s=1,maxit=500,tol=1E-03,apporx.arg=FALSE,plot=FALSE,ncores=1,
                             verbose=TRUE,left.lab="Subjects",right.lab="Features") {
   
   #Checking if the right packages are present to handle approximated SVDs.
-  if (approx. == TRUE) {
+  if (apporx.arg == TRUE) {
     if (inherits(O, "FBM") == TRUE )  {if (!requireNamespace("bigstatsr",quietly = TRUE)) stop("Package bigstatsr needs to be installed to handle FBM objects.")}
     else {if (!requireNamespace("irlba",quietly = TRUE)) stop("Package irlba needs to be installed to get fast truncated SVD solutions.")}
   }
@@ -121,7 +121,7 @@ ssvdEN_sol_path <- function(O, center=TRUE,scale=TRUE, dg.grid.right = 1 : (ncol
     }
   
   if (is.null(svd.0) == TRUE) {
-    if (approx. == TRUE) {
+    if (apporx.arg == TRUE) {
       if (inherits(O, "FBM") == TRUE) s <- bigstatsr::big_randomSVD(O, fun.scaling = bigstatsr::big_scale(center = center, scale = scale), k = n.PC, ncores = ncores)
       else {
         O <- scale(O, center=center, scale = scale)
