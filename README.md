@@ -1,25 +1,4 @@
----
-title: '*MOSS*: Multi-omic integration via sparse singular value decomposition'
-subtitle: "Working example of MOSS' main capabilities."
-author: "Agustin Gonzalez-Reymundez, Alexander Grueneberg, Filipe Couto, Ana I. Vazquez"
-date: "April 22, 2020"
-output: pdf_document
-vignette: >
-   %\VignetteEngine{knitr::rmarkdown}
-   %\VignetteIndexEntry{<<<<Vignette Title>>>>}
-   %\VignetteEncoding{UTF-8}
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  echo=T,
-  results = "hide",
-  comment = "#>"
-)
-knitr::knit_hooks$set(optipng = knitr::hook_optipng)
-knitr::opts_chunk$set(time_it = TRUE)
-```
+## MOSS: Multi-Omic integratrion via 
 
 **Contact**: gonza@msu.edu
 
@@ -50,6 +29,8 @@ c. Large number of subjects and features.
   The code below illustrates how to install and load MOSS.
 
 ```{r echo=T}
+library(devtools)
+install_github("agugonrey/MOSS")
 library("MOSS")
 ```  
 
