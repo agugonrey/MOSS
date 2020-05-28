@@ -14,10 +14,10 @@ library("MOSS")
 
 ### Documentation.
 
-  For a description of the package's main function. Check the package's vignette for a working example of how to use MOSS.
+  For a description of the package's main function. 
 
 ```{r echo=T}
 help(moss)
 ```
 
-
+  Check the package's vignette for a working example of how to use MOSS.
