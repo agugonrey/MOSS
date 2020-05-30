@@ -20,4 +20,4 @@ library("MOSS")
 help(moss)
 ```
 
-  Check the package's vignette for a working example of how to use MOSS.
+  Check MOSS' [vignette](https://github.com/agugonrey/MOSS/blob/master/vignettes/MOSS_working_example.pdf) for package's synopsis and a working example.
