@@ -50,6 +50,8 @@ c. Large number of subjects and features.
   The code below illustrates how to install and load MOSS.
 
 ```{r echo=T}
+library(devtools)
+install_github("agugonrey/MOSS")
 library("MOSS")
 ```  
 
