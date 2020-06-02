@@ -20,4 +20,4 @@ library("MOSS")
 help(moss)
 ```
 
-  Check MOSS' [vignette](https://github.com/agugonrey/MOSS/blob/master/vignettes/MOSS_working_example.pdf) for package's synopsis and a working example.
+  For more documentation, see the package's [vignette](https://github.com/agugonrey/MOSS/blob/master/vignettes/MOSS_working_example.pdf). An example of using MOSS on a multi-omic "big" pan-cancer data can be found [here](https://github.com/agugonrey/MOSS/blob/master/vignettes/MOSS_pancancer_example.pdf). The data can be found [here](https://data.mendeley.com/datasets/r8p67nfjc8/1).
