@@ -9,7 +9,7 @@ rrr_big <- function(X, Y=NULL, power=1, K.X=min(dim(X)) - 1, K.Y=1,verbose=T,lr.
     if (all(vapply(c('matrix','array','FBM'), function(x) inherits(X,x),TRUE) == FALSE)) 
       stop("X has to be an object of class 'matrix' or 'FBM'.")
     
-    if (all(vapply(c('matrix','array','FBM'), function(x) inherits(Y,x),TRUE) == FALSE)) stop("Y has to be an object of class 'matrix' or 'FBM'.")
+    if (all(vapply(c('matrix','array','FBM'), function(x) inherits(Y,x),TRUE) == FALSE))
     stop("Y have to be an object of class 'array', 'matrix' or 'FBM'.")
     
     if (nrow(Y) != nrow(X)) stop("Both matrices need to have the same number of rows.")
