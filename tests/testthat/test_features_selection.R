@@ -1,5 +1,4 @@
 context("Selection of features and subjects")
-library(MOSS)
 
 test_that("Testing if Number of features/subjects selected by LASSO equal to sparsity degrees ", {
   set.seed(42)

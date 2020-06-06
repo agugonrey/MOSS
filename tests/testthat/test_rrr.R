@@ -1,5 +1,4 @@
 context("Reduced rank regression")
-library(MOSS)
 
 test_that("Testing if MOSS gives same results than matrix general LM (non-singular case)", {
   set.seed(42)
