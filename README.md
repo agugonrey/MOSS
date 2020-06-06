@@ -6,17 +6,17 @@ Agustin Gonzalez-Reymundez, Alexander Grueneberg, and Ana I. Vazquez.
 
   The code below illustrates how to install and load MOSS.
 
-```{r echo=T}
+```
 library(devtools)
 install_github("agugonrey/MOSS")
 library("MOSS")
-```  
+```
 
 ### Documentation.
 
   For a description of the package's main function. 
 
-```{r echo=T}
+```
 help(moss)
 ```
 
