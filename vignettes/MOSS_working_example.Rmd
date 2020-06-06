@@ -13,7 +13,6 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  echo=T,
   results = "hide",
   comment = "#>"
 )
@@ -49,7 +48,7 @@ c. Large number of subjects and features.
 
   The code below illustrates how to install and load MOSS.
 
-```{r echo=T}
+```{r}
 library(devtools)
 install_github("agugonrey/MOSS")
 library("MOSS")
@@ -59,7 +58,7 @@ library("MOSS")
 
   The examples below were produced using the results of a very straightforward simulation of two **regulatory modules** (i.e. groups of features affecting specific groups of subjects -(Li et al., 2012))) across four data blocks (see **help(sim_data)** for a description of the simulation procedure). The following code shows how to load these  data and check its classes and dimensions.
 
-```{r echo=T}
+```{r}
 #Simulating omic blocks.
 sim_data <- simulate_data()
 
@@ -102,7 +101,7 @@ draw(Heatmap(do.call("cbind", sim_blocks[-4]), #Excluding the categorical respon
 
   Now, suppose you want a fast PCA to have an idea of your data structure. You can do that with __**MOSS**__ by giving a list of objects of class "matrix" or "FBM".
 
-```{r echo=T}
+```{r}
 library("ggplot2")
 library("ggthemes")
 library("viridis")
@@ -117,21 +116,21 @@ out <-  moss(
 
 The function **moss** returns a plot of eigenvalues, together with their first and second derivative across PC index.
 
-```{r echo=T}
+```{r}
 #Showing scree plot.
 out$scree.plot
 ```
 
 As well as a plot of the first two PCs.
 
-```{r echo=T}
+```{r}
 #Showing scatterplot of the first two PCs.
 out$PC1_2.plot
 ```
 
   In this simple example, the data structure is clear. However, if the user wishes to map a set of more than two PC, the option *tSNE* can be used. This tell __**MOSS**__ to call __**Rtsne**__ to map more than two PCs onto a two dimensional display. By using *tSNE* = TRUE, one random realization of t-stochastic neighbor embedding is done, with perplexity equal 50, in one thousand iterations (e.g. *tSNE* =  list("perp"=50, "n.samples"=1, "n.iter"=1e3). The user can vary this by passing arguments to *tSNE*, as in the following code.
 
-```{r echo=T}
+```{r}
 library("Rtsne")
 set.seed(43)
 out <-  moss(
@@ -144,7 +143,7 @@ out$tSNE.plot
 
   The user can also use the option *clus*=TRUE within *moss*. This option allows __**MOSS**__ to perform a cluster delimitation using DBSCAN (), as inspired in the __**meredith**__ package. For more personalized aesthetic and labeling, check **help(tsne2clus)** and examples in the extended vignette.
 
-```{r echo=T}
+```{r}
 set.seed(43)
 library("dbscan")
 out <-  moss(
@@ -158,7 +157,7 @@ out$clus.obj
 
   If information of pre-defined  biologically relevant groups is available (e.g. histological subtypes of cancer), the user can *1)* use it to label points and visually assess the overlap between data-driven clusters and previous information and *2)* use to determine which PCs are significantly associated with each group.
 
-```{r echo=T}
+```{r}
 set.seed(43)
 out <-  moss(
   data.blocks = sim_blocks[-4], #a list with omic blocks (we exclude the response vector)
@@ -178,7 +177,7 @@ out$subLabels_vs_cluster
 
   Now, suppose that the user is interested in detecting what groups of subjects and features form regulatory modules. The following code shows an application of MOSS using sparse principal components analysis. In this example, we tune the degree of sparsity for both subjects and features, using an elastic net parameter *alpha.* equal to one, for subjects (i.e. a LASSO penalty), and 0.5 for features.
 
-```{r echo=T}
+```{r}
 set.seed(43)
 out <-  moss(data.blocks = sim_blocks[-4], #Feed moss a list with omic blocks (we exclude the response vector)
         method="pca", #This is the default method.
@@ -201,7 +200,7 @@ out$tun_dgSpar.plot
  
  We now can use the solutions __**MOSS**__ for the selected $dg$ for subjects and/or features and and plot them against elements of *lab.sub* and *lab.feat* to evaluate how good __**MOSS**__ does to identify relevant biological signals (see **help(moss)**).
  
-```{r echo=T}
+```{r}
 library("gridExtra")
 
 #Did we select the correct 'signal subjects'?
@@ -244,14 +243,14 @@ grid.arrange(q.s,q.f)
 
   The above results offer a good example of how the performance of the selection task can be closed tied to what PCs end being included in the model. In this simple example, the scree plot suggested the two first PCs as the ones explaining most of the data variability. If we are interested in finding the regulatory modules that define clusters of subjects, we would like first to identify what left-singular vectors are associated with these clusters. Then, determine what features have a relevant impact on their variation, by taking those with non-zero values along the matching right-singular vectors. Whenever sparsity is imposed at the subjects level and *clus.lab* is different than NULL, a Chi square statistic of the overlap between selected subjects and pre-defined labels is used instead of *KW*.
 
-```{r echo=T}
+```{r}
 #What axes of variation are associated with clusters of subjects?
 out$subLabels_vs_cluster
 ```
  
  Finally, to have an idea of how we did in terms of specificity and sensitivity, we can use the following code, where the rows represent 'positive' versus 'negative' results, respectively, and columns represent 'true' versus 'false' results. From the tables below, it can be seen that in this simple example we had 100% specificity and  99% sensitivity for subjects, and 92% specificity and 99% sensitivity. Nevertheless, we expect lower performances as a result of more convoluted structure and combination of sparsity parameters.
  
-```{r echo=T}
+```{r}
 #Evaluating performance of subjects selection.
 table(rowMeans(out$sparse$u[,1:2]) != 0,lab.sub)
 
