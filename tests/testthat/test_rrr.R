@@ -1,5 +1,4 @@
 context("Reduced rank regression")
-library(MOSS)
 
 test_that("Testing if MOSS gives same results than matrix general LM (non-singular case)", {
   set.seed(42)
@@ -34,7 +33,7 @@ test_that("Testing if MOSS gives same results than matrix general LM (singular c
 })
 
 test_that("Testing if MOSS gives same results than matrix general LM (multivariate; singular case)", {
-  data("sim_data")
+  sim_data <- simulate_data()
   sim_blocks <- sim_data$sim_blocks
   
   X <- as.matrix(sim_blocks$`Block 1`[,1:20])
@@ -52,7 +51,7 @@ test_that("Testing if MOSS gives same results than matrix general LM (multivaria
 })
 
 test_that("Testing if MOSS gives same results than matrix general LM (multivariate multiple; singular case)", {
-  data("sim_data")
+  sim_data <- simulate_data()
   sim_blocks <- sim_data$sim_blocks
   
   X <- sim_blocks$`Block 1`

@@ -1,9 +1,9 @@
 context("Selection of features and subjects")
-library(MOSS)
 
 test_that("Testing if Number of features/subjects selected by LASSO equal to sparsity degrees ", {
   set.seed(42)
-  data(sim_blocks)
+  sim_data <- simulate_data()
+  sim_blocks <- sim_data$sim_blocks
   X <- sim_blocks$`Block 3`
  
   #Sampling a number of subjects and features for a fix sparsity degree.
@@ -17,7 +17,8 @@ test_that("Testing if Number of features/subjects selected by LASSO equal to spa
 
 test_that("Testing if Smoothing by RIDGE penalty does not select features/subjects ", {
   set.seed(42)
-  data(sim_blocks)
+  sim_data <- simulate_data()
+  sim_blocks <- sim_data$sim_blocks
   X <- sim_blocks$`Block 3`
   
   #Sampling a number of subjects and features for a fix sparsity degree.
@@ -31,7 +32,8 @@ test_that("Testing if Smoothing by RIDGE penalty does not select features/subjec
 
 test_that("Testing if Elastic Net penalty selects more subjects/features than the specified sparsity degrees", {
   set.seed(42)
-  data(sim_blocks)
+  sim_data <- simulate_data()
+  sim_blocks <- sim_data$sim_blocks
   X <- sim_blocks$`Block 3`
   
   #Sampling a number of subjects and features for a fix sparsity degree.
