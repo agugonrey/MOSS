@@ -36,6 +36,5 @@ Suggests:
     MASS,
     knitr,
     rmarkdown,
-    testthat,
-    qpdf
+    testthat
 VignetteBuilder: knitr
