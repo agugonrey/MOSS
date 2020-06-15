@@ -3,3 +3,7 @@ r:
   - oldrel
   - release
   - devel
+bioc_packages:
+  - annotate
+  - ComplexHeatmap
+  
