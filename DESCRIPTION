@@ -13,14 +13,14 @@ Description: High dimensionality, noise and heterogeneity among samples and omic
     e. Using the flexible framework of generalized SVD to extend the above ideas into unsupervised and supervised problems.
 Imports:
     stats,
-    cluster
+    cluster,
+    Rtsne,
+    dbscan,
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.0
 Suggests:
-    Rtsne,
-    dbscan,
     irlba,
     viridis,
     bigstatsr,
