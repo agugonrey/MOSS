@@ -9,7 +9,13 @@
 #'
 #' The function allows the use of the base svd function for relatively small problems. For larger problems, functions for fast-partial SVD (irlba and big_randomSVD, from irlba and bigstatsr packages)
 #' are used.
-#'
+#' 
+#' @note When elastic net is used ('alpha.s' or 'alpha.f' in the (0,1) interval), the resulting number of non-zero subjects or features
+#' is larger than the 'dg.spar.subjects' or 'dg.spar.features' values. This allows to rapidly increase the number of non-zero elements when tuning the degrees of sparsity with 
+#' function ssvdEN_sol_path. In order to get exact values for the degrees of sparsity at subjects or features levels, the user needs to 
+#' set the value of 'exact.dg' parameter from 'FALSE' (the default) to 'TRUE'.
+#' 
+#' 
 #' @param O Numeric matrix of n subjects (rows) and p features (columns). It can be a Filebacked Big Matrix.
 #' @param n.PC Number of desired principal axes. Numeric. Defaults to 1.
 #' @param dg.spar.features Degree of sparsity at the features level. Numeric. Defaults to NULL.
@@ -24,6 +30,7 @@
 #' @param svd.0 List containing an initial SVD. Defaults to NULL.
 #' @param s.values Should the singular values be calculated? Logical. Defaults to TRUE.
 #' @param ncores Number of cores used by big_randomSVD. Default does not use parallelism. Ignored when class(O)!=FBM.
+#' @param exact.dg Should we compute exact degrees of sparsity? Logical. Defaults to FALSE. Only relevant When alpha.s or alpha.f are in the (0,1) interval and exact.dg = TRUE.
 #' @return A list with the results of the (sparse) SVD, containing:
 #' \itemize{
 #' \item u: Matrix with left eigenvectors.
@@ -109,7 +116,7 @@
 #' colSums(out$sparse$u!=0)
 #' colSums(out$sparse$v!=0)
 ssvdEN <- function (O, n.PC = 1, dg.spar.features = NULL, dg.spar.subjects = NULL,maxit = 500, tol = 0.001,
-                    scale.arg = TRUE, center.arg = TRUE, approx.arg = FALSE, alpha.f = 1, alpha.s = 1, svd.0 = NULL,s.values=TRUE, ncores=1) {
+                    scale.arg = TRUE, center.arg = TRUE, approx.arg = FALSE, alpha.f = 1, alpha.s = 1, svd.0 = NULL,s.values=TRUE, ncores=1,exact.dg=FALSE) {
 
   #Checking if the right packages are present to handle approximated SVDs.
   if (approx.arg == TRUE) {
@@ -177,7 +184,20 @@ ssvdEN <- function (O, n.PC = 1, dg.spar.features = NULL, dg.spar.subjects = NUL
       s$v <- qr.Q(qr(t(usx)))
 
       #Solving v for fixed u.
-      if (sum(shrink.features) > 0) for (j in shrink.features) s$v[, j] <- softEN(s$v[, j], dg.spar.features[j], alpha.f)
+      if (sum(shrink.features) > 0) 
+        for (j in shrink.features) {
+          s$v[, j] <- softEN(s$v[, j],
+                             dg.spar.features[j], 
+                             alpha.f)
+          if (exact.dg == TRUE & alpha.f > 0 & alpha.f < 1) {
+            if (sum(s$v[, j] != 0) > (p - dg.spar.features[j])) {
+              aux <- rep(0, p)
+              tmp <- order(abs(s$v[, j]),decreasing = T)[1:(p - dg.spar.features[j])]
+              aux[tmp] <- s$v[tmp,j]
+              s$v[, j] <- aux
+            }
+          }
+        }
       norm. <- stats::sd(s$v)
       if (norm. == 0) norm. <- 1
       s$v <- s$v / norm.
@@ -187,7 +207,20 @@ ssvdEN <- function (O, n.PC = 1, dg.spar.features = NULL, dg.spar.subjects = NUL
       s$u <- qr.Q(qr(xsv))
 
       #Solving u for fixed v.
-      if (sum(shrink.subjects) > 0) for (j in shrink.subjects) s$u[, j] <- softEN(s$u[, j], dg.spar.subjects[j], alpha.s)
+      if (sum(shrink.subjects) > 0) 
+        for (j in shrink.subjects) {
+          s$u[, j] <- softEN(s$u[, j],
+                             dg.spar.subjects[j], 
+                             alpha.s)
+          if (exact.dg == TRUE & alpha.s > 0 & alpha.s < 1) {
+            if (sum(s$u[, j] != 0) > (n - dg.spar.subjects[j])) {
+              aux <- rep(0, m)
+              tmp <- order(abs(s$u[, j]),decreasing = T)[1:(p - dg.spar.subjects[j])]
+              aux[tmp] <- s$u[tmp,j]
+              s$u[, j] <- aux
+            }
+          }
+        }
       norm. <- stats::sd(s$u)
       if (norm. == 0) norm. <- 1
       s$u <- s$u / norm.
