@@ -98,12 +98,19 @@
 #' all.equal(unique(colSums(out$v != 0)), ncol(X))
 #' 
 #' #Elastic Net penalties.
-#' sum(ssvdEN(X,dg.spar.features = s.v,alpha.f = 0.5)$v != 0.5) >= s.v
+#' sum(ssvdEN(X,dg.spar.features = s.v,alpha.f = 0.5)$v != 0) >= s.v
 #' all(unique(colSums(ssvdEN(X,dg.spar.features = s.v, n.PC=5,alpha.f = 0.5)$v != 0)) >= s.v)
 #'
-#' sum(ssvdEN(X,dg.spar.subjects = s.u,alpha.s = 0.5)$v != 0) >= s.u
+#' sum(ssvdEN(X,dg.spar.subjects = s.u,alpha.s = 0.5)$u != 0) >= s.u
 #' all(unique(colSums(ssvdEN(X,dg.spar.subjects = s.u, n.PC=5,alpha.s = 0.5)$u != 0)) >= s.u)
+#'
+#' #Elastic Net penalties with exact degrees of sparsity.
+#' sum(ssvdEN(X,dg.spar.features = s.v,alpha.f = 0.5,exact.dg=TRUE)$v != 0) == s.v
+#' all(unique(colSums(ssvdEN(X,dg.spar.features = s.v, n.PC=5,alpha.f = 0.5,exact.dg=TRUE)$v != 0)) == s.v)
 #' 
+#' sum(ssvdEN(X,dg.spar.subjects = s.u,alpha.s = 0.5,exact.dg=TRUE)$u != 0) == s.u
+#' all(unique(colSums(ssvdEN(X,dg.spar.subjects = s.u, n.PC=5,alpha.s = 0.5,exact.dg=TRUE)$u != 0)) == s.u)
+#'
 #' #Example of usage within moss.
 #'
 #' out <- moss(sim_blocks[-4],
@@ -214,8 +221,8 @@ ssvdEN <- function (O, n.PC = 1, dg.spar.features = NULL, dg.spar.subjects = NUL
                              alpha.s)
           if (exact.dg == TRUE & alpha.s > 0 & alpha.s < 1) {
             if (sum(s$u[, j] != 0) > (n - dg.spar.subjects[j])) {
-              aux <- rep(0, m)
-              tmp <- order(abs(s$u[, j]),decreasing = T)[1:(p - dg.spar.subjects[j])]
+              aux <- rep(0, n)
+              tmp <- order(abs(s$u[, j]),decreasing = T)[1:(n - dg.spar.subjects[j])]
               aux[tmp] <- s$u[tmp,j]
               s$u[, j] <- aux
             }
