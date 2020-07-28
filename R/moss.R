@@ -27,6 +27,11 @@
 #'   \item Tuning of degrees of sparsity is done heuristically on training set. In our experience, this results in high specificity, but rather low sensitiviy (i.e. too liberal cutoffs, as compared with extensive cross-validation on testing set).
 #'   \item When 'method' is an unsupervised technique, 'K.X' is the number of latent factors returned and used in further analysis. When 'method' is a supervised technique, 'K.X' is used to perform a SVD to facilitate the product of large matrices and inverses.
 #'   \item If 'K.X' (or 'K.Y') equal 1, no plots are returned.
+#'   \item Although the degree of sparsity maps onto number of features/subjects for Lasso, the user needs to be aware that this conceptual correspondence
+#'         is lost for full EN (alpha belonging to (0, 1); e.g. the number of features selected with alpha < 1 will be eventually larger than the optimal degree of sparsity).
+#'         This allows to rapidly increase the number of non-zero elements when tuning the degrees of sparsity. 
+#'         In order to get exact values for the degrees of sparsity at subjects or features levels, the user needs to 
+#'         set the value of 'exact.dg' parameter from 'FALSE' (the default) to 'TRUE'.
 #' }
 #' @param data.blocks List containing omic blocks of class 'matrix' or 'FBM'. In each block, rows represent subjects and columns features. IMPORTANT: omic blocks have to be aligned by rows.
 #' @param method Multivariate method. Character. Defaults to 'pca'. Possible options are pca, mbpca, pca-lda, mbpca-lda, pls, mbpls, pls-lda, mbpls-lda, rrr, mbrrr, rrr-lda, mbrrr-lda.
@@ -48,6 +53,8 @@
 #' @param norm.arg Should omic blocks be normalized? Logical. Defaults to TRUE.
 #' @param plot Should results be plotted? Logical. Defaults to FALSE.
 #' @param approx.arg Should we use standard SVD or random approximations? Defaults to FALSE. If TRUE and at least one block is of class 'matrix', irlba is called. If TRUE & is(O,'FBM')==TRUE, big_randomSVD is called.
+#' @param exact.dg Should we compute exact degrees of sparsity? Logical. Defaults to FALSE. Only relevant When alpha.s or alpha.f are in the (0,1) interval and exact.dg = TRUE.
+
 #' @return Returns a list with the results of the sparse generalized SVD. If \emph{plot}=TRUE, a series of plots is generated as well.
 #' \itemize{
 #' \item \emph{\strong{B:}}  The object of the (sparse) SVD. Depending of the method used, B can be a extended matrix of normalized omic blocks, a variance-covariance matrix, or a matrix of regression coeficients.
@@ -176,7 +183,7 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
                    K.X=5,K.Y=K.X,verbose=TRUE,ncores=1,
                    dg.grid.left = NULL, dg.grid.right=NULL,
                    alpha.right=1,alpha.left=1,plot=FALSE,clus=FALSE,
-                   clus.lab=NULL,tSNE=NULL,axes.pos=1:K.Y,approx.arg=FALSE) {
+                   clus.lab=NULL,tSNE=NULL,axes.pos=1:K.Y,approx.arg=FALSE,exact.dg=FALSE) {
   
   #Inputs need to be a list of data matrices.
   if(!is.list(data.blocks)) stop("Input has to be a list with omic blocks.")
@@ -190,7 +197,7 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
   #Number of data blocks.
   M <- length(data.blocks)
   
-  if (is.null(tSNE) == TRUE | clus == TRUE | is.null(clus.lab) == TRUE) plot <- TRUE
+  if (is.null(tSNE) == FALSE | clus == TRUE | is.null(clus.lab) == FALSE) plot <- TRUE
   
   #Checking the class of each data block.
   block.class <- rep("matrix", M)
@@ -478,7 +485,7 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
                     dg.grid.right = dg.grid.right,dg.grid.left = dg.grid.left,
                     n.PC = K.Y,alpha.f = alpha.right,alpha.s = alpha.left,
                     plot = plot,approx = approx.arg,
-                    verbose = verbose,left.lab = left.lab,right.lab = right.lab)
+                    verbose = verbose,left.lab = left.lab,right.lab = right.lab,exact.dg = exact.dg)
 
     out$sparse <- aux.svd$SVD
     if (plot) out$tun_dgSpar.plot <- aux.svd$plot
