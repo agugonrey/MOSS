@@ -21,7 +21,8 @@ ssvdEN_sol_path(
   ncores = 1,
   verbose = TRUE,
   left.lab = "Subjects",
-  right.lab = "Features"
+  right.lab = "Features",
+  exact.dg = FALSE
 )
 }
 \arguments{
@@ -58,6 +59,8 @@ ssvdEN_sol_path(
 \item{left.lab}{Label for the subjects level. Character. Defaults to 'subjects'.}
 
 \item{right.lab}{Label for the features level. Character. Defaults to 'features'.}
+
+\item{exact.dg}{Should we compute exact degrees of sparsity? Logical. Defaults to FALSE. Only relevant When alpha.s or alpha.f are in the (0,1) interval and exact.dg = TRUE.}
 }
 \value{
 \itemize{
@@ -87,8 +90,13 @@ For one PC (rank 1 case), the algorithm finds vectors u, w that minimize:
    ||x - u w'||_F^2 + lambda_w (alpha_w||w||_1 + (1 - alpha_w)||w||_F^2) + lambda_u (alpha||u||_1 + (1 - alpha_u)||u||_F^2)
 such that ||u|| = 1. The right Eigen vector is obtained from v = w / ||w|| and the corresponding Eigen value = u^T x v.
 The penalties lambda_u and lambda_w are mapped from specified desired degrees of sparsity (dg.spar.features & dg.spar.subjects).
-Altought the degree of sparsity maps onto number of features/subjects for Lasso, the user needs to be aware that this conceptual correspondence
+}
+\note{
+Although the degree of sparsity maps onto number of features/subjects for Lasso, the user needs to be aware that this conceptual correspondence
 is lost for full EN (alpha belonging to (0, 1); e.g. the number of features selected with alpha < 1 will be eventually larger than the optimal degree of sparsity).
+This allows to rapidly increase the number of non-zero elements when tuning the degrees of sparsity. 
+In order to get exact values for the degrees of sparsity at subjects or features levels, the user needs to 
+set the value of 'exact.dg' parameter from 'FALSE' (the default) to 'TRUE'.
 }
 \examples{
 library("MOSS")

@@ -18,7 +18,8 @@ ssvdEN(
   alpha.s = 1,
   svd.0 = NULL,
   s.values = TRUE,
-  ncores = 1
+  ncores = 1,
+  exact.dg = FALSE
 )
 }
 \arguments{
@@ -49,6 +50,8 @@ ssvdEN(
 \item{s.values}{Should the singular values be calculated? Logical. Defaults to TRUE.}
 
 \item{ncores}{Number of cores used by big_randomSVD. Default does not use parallelism. Ignored when class(O)!=FBM.}
+
+\item{exact.dg}{Should we compute exact degrees of sparsity? Logical. Defaults to FALSE. Only relevant When alpha.s or alpha.f are in the (0,1) interval and exact.dg = TRUE.}
 }
 \value{
 A list with the results of the (sparse) SVD, containing:
@@ -69,6 +72,12 @@ The penalties lambda_u and lambda_w are mapped from specified desired degree of 
 \details{
 The function allows the use of the base svd function for relatively small problems. For larger problems, functions for fast-partial SVD (irlba and big_randomSVD, from irlba and bigstatsr packages)
 are used.
+}
+\note{
+When elastic net is used ('alpha.s' or 'alpha.f' in the (0,1) interval), the resulting number of non-zero subjects or features
+is larger than the 'dg.spar.subjects' or 'dg.spar.features' values. This allows to rapidly increase the number of non-zero elements when tuning the degrees of sparsity with 
+function ssvdEN_sol_path. In order to get exact values for the degrees of sparsity at subjects or features levels, the user needs to 
+set the value of 'exact.dg' parameter from 'FALSE' (the default) to 'TRUE'.
 }
 \examples{
 library("MOSS")
@@ -125,11 +134,18 @@ all.equal(unique(colSums(out$u != 0)), nrow(X))
 all.equal(unique(colSums(out$v != 0)), ncol(X))
 
 #Elastic Net penalties.
-sum(ssvdEN(X,dg.spar.features = s.v,alpha.f = 0.5)$v != 0.5) >= s.v
+sum(ssvdEN(X,dg.spar.features = s.v,alpha.f = 0.5)$v != 0) >= s.v
 all(unique(colSums(ssvdEN(X,dg.spar.features = s.v, n.PC=5,alpha.f = 0.5)$v != 0)) >= s.v)
 
-sum(ssvdEN(X,dg.spar.subjects = s.u,alpha.s = 0.5)$v != 0) >= s.u
+sum(ssvdEN(X,dg.spar.subjects = s.u,alpha.s = 0.5)$u != 0) >= s.u
 all(unique(colSums(ssvdEN(X,dg.spar.subjects = s.u, n.PC=5,alpha.s = 0.5)$u != 0)) >= s.u)
+
+#Elastic Net penalties with exact degrees of sparsity.
+sum(ssvdEN(X,dg.spar.features = s.v,alpha.f = 0.5,exact.dg=TRUE)$v != 0) == s.v
+all(unique(colSums(ssvdEN(X,dg.spar.features = s.v, n.PC=5,alpha.f = 0.5,exact.dg=TRUE)$v != 0)) == s.v)
+
+sum(ssvdEN(X,dg.spar.subjects = s.u,alpha.s = 0.5,exact.dg=TRUE)$u != 0) == s.u
+all(unique(colSums(ssvdEN(X,dg.spar.subjects = s.u, n.PC=5,alpha.s = 0.5,exact.dg=TRUE)$u != 0)) == s.u)
 
 #Example of usage within moss.
 

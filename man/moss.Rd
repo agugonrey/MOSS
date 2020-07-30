@@ -23,7 +23,8 @@ moss(
   clus.lab = NULL,
   tSNE = NULL,
   axes.pos = 1:K.Y,
-  approx.arg = FALSE
+  approx.arg = FALSE,
+  exact.dg = FALSE
 )
 }
 \arguments{
@@ -65,6 +66,8 @@ When sparsity is imposed on the left eigenvectors, the association between non-z
 \item{axes.pos}{PC index used for tSNE. Defaults to 1 : K.Y. Used only when tSNE is different than NULL.}
 
 \item{approx.arg}{Should we use standard SVD or random approximations? Defaults to FALSE. If TRUE and at least one block is of class 'matrix', irlba is called. If TRUE & is(O,'FBM')==TRUE, big_randomSVD is called.}
+
+\item{exact.dg}{Should we compute exact degrees of sparsity? Logical. Defaults to FALSE. Only relevant When alpha.s or alpha.f are in the (0,1) interval and exact.dg = TRUE.}
 }
 \value{
 Returns a list with the results of the sparse generalized SVD. If \emph{plot}=TRUE, a series of plots is generated as well.
@@ -123,6 +126,11 @@ When response Y is a character column matrix, with classes or categories by subj
   \item Tuning of degrees of sparsity is done heuristically on training set. In our experience, this results in high specificity, but rather low sensitiviy (i.e. too liberal cutoffs, as compared with extensive cross-validation on testing set).
   \item When 'method' is an unsupervised technique, 'K.X' is the number of latent factors returned and used in further analysis. When 'method' is a supervised technique, 'K.X' is used to perform a SVD to facilitate the product of large matrices and inverses.
   \item If 'K.X' (or 'K.Y') equal 1, no plots are returned.
+  \item Although the degree of sparsity maps onto number of features/subjects for Lasso, the user needs to be aware that this conceptual correspondence
+        is lost for full EN (alpha belonging to (0, 1); e.g. the number of features selected with alpha < 1 will be eventually larger than the optimal degree of sparsity).
+        This allows to rapidly increase the number of non-zero elements when tuning the degrees of sparsity. 
+        In order to get exact values for the degrees of sparsity at subjects or features levels, the user needs to 
+        set the value of 'exact.dg' parameter from 'FALSE' (the default) to 'TRUE'.
 }
 }
 \examples{
