@@ -54,6 +54,7 @@
 #' @param plot Should results be plotted? Logical. Defaults to FALSE.
 #' @param approx.arg Should we use standard SVD or random approximations? Defaults to FALSE. If TRUE and at least one block is of class 'matrix', irlba is called. If TRUE & is(O,'FBM')==TRUE, big_randomSVD is called.
 #' @param exact.dg Should we compute exact degrees of sparsity? Logical. Defaults to FALSE. Only relevant When alpha.s or alpha.f are in the (0,1) interval and exact.dg = TRUE.
+#' @param use_fbm Should we treat omic blocks as Filed Backed Matrix (FBM)? Logical. Defaults to FALSE.
 
 #' @return Returns a list with the results of the sparse generalized SVD. If \emph{plot}=TRUE, a series of plots is generated as well.
 #' \itemize{
@@ -183,7 +184,7 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
                    K.X=5,K.Y=K.X,verbose=TRUE,ncores=1,
                    dg.grid.left = NULL, dg.grid.right=NULL,
                    alpha.right=1,alpha.left=1,plot=FALSE,clus=FALSE,
-                   clus.lab=NULL,tSNE=NULL,axes.pos=1:K.Y,approx.arg=FALSE,exact.dg=FALSE) {
+                   clus.lab=NULL,tSNE=NULL,axes.pos=1:K.Y,approx.arg=FALSE,exact.dg=FALSE, use_fbm=FALSE) {
   
   #Inputs need to be a list of data matrices.
   if(!is.list(data.blocks)) stop("Input has to be a list with omic blocks.")
@@ -198,6 +199,15 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
   M <- length(data.blocks)
   
   if (is.null(tSNE) == FALSE | clus == TRUE | is.null(clus.lab) == FALSE) plot <- TRUE
+  
+  #Turning omic blocks into FBM.
+  if (use_fbm == TRUE) {
+    if (!requireNamespace("bigstatsr",quietly = TRUE)) stop("Package 'bigstatsr' needs to be installed to handle FBM objects.")
+    else {
+      if (verbose) message("Turn omic block into FBM objects.")
+      data.blocks <- lapply(data.blocks, bigstatsr::as_FBM)
+    }
+  }
   
   #Checking the class of each data block.
   block.class <- rep("matrix", M)
