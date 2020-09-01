@@ -24,7 +24,8 @@ moss(
   tSNE = NULL,
   axes.pos = 1:K.Y,
   approx.arg = FALSE,
-  exact.dg = FALSE
+  exact.dg = FALSE,
+  use_fbm = FALSE
 )
 }
 \arguments{
@@ -68,6 +69,8 @@ When sparsity is imposed on the left eigenvectors, the association between non-z
 \item{approx.arg}{Should we use standard SVD or random approximations? Defaults to FALSE. If TRUE and at least one block is of class 'matrix', irlba is called. If TRUE & is(O,'FBM')==TRUE, big_randomSVD is called.}
 
 \item{exact.dg}{Should we compute exact degrees of sparsity? Logical. Defaults to FALSE. Only relevant When alpha.s or alpha.f are in the (0,1) interval and exact.dg = TRUE.}
+
+\item{use_fbm}{Should we treat omic blocks as Filed Backed Matrix (FBM)? Logical. Defaults to FALSE.}
 }
 \value{
 Returns a list with the results of the sparse generalized SVD. If \emph{plot}=TRUE, a series of plots is generated as well.
