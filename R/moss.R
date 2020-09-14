@@ -516,7 +516,8 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
                                   labels = aux.name,
                                   aest = aest.f(aux.name),
                                   eps_range = c(0,4),eps_res = 100,
-                                  xlab = "LDF1",ylab="LDF2",clus=TRUE)
+                                  xlab = "LDF1",ylab="LDF2",clus=TRUE,
+                                  min.clus.size = 2)
       }
       else {
         out$PC1_2.plot <- tsne2clus(list(Y=scale(svd0$w.x[,1:2])),
@@ -532,7 +533,8 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
                                   labels = aux.name,
                                   aest = aest.f(aux.name),
                                   eps_range = c(0,4),eps_res = 100,
-                                  xlab = "PC1",ylab="PC2",clus=TRUE)
+                                  xlab = "PC1",ylab="PC2",clus=TRUE,
+                                  min.clus.size = 2)
       }
       else {
        out$PC1_2.plot <- tsne2clus(list(Y=scale(svd0$u[,1:2])),
@@ -557,7 +559,9 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
                                   aest = aest.f(aux.name),
                                   eps_range = c(0,4),eps_res = 100,
                                   xlab = paste0("tSNE_x{LDF",paste0(range((1:K.Y)[axes.pos]),collapse ="-"),"}"),
-                                  ylab=paste0("tSNE_y{LDF",paste0(range((1:K.Y)[axes.pos]),collapse ="-"),"}"),clus=TRUE)
+                                  ylab=paste0("tSNE_y{LDF",paste0(range((1:K.Y)[axes.pos]),collapse ="-"),"}"),
+                                  clus=TRUE,
+                                  min.clus.size = 2)
       }
       else {
         if (is.null(clus.lab)) aux.name <- rep(left.lab,n)
@@ -566,7 +570,8 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
                                    labels = aux.name,
                                    aest = aest.f(aux.name),
                                    xlab = paste0("tSNE_x{LDF",1,"-",ncol(data.blocks[[1]]),"}"),
-                                   ylab=paste0("tSNE_y{LDF",1,"-",ncol(data.blocks[[1]]),"}"),clus = FALSE)
+                                   ylab=paste0("tSNE_y{LDF",1,"-",ncol(data.blocks[[1]]),"}"),
+                                   clus = FALSE)
 
 
       }
@@ -584,7 +589,9 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
                                   aest = aest.f(aux.name),
                                   eps_range = c(0,4),eps_res = 100,
                                   xlab = paste0("tSNE_x{PC",paste0(range((1:K.Y)[axes.pos]),collapse ="-"),"}"),
-                                  ylab=paste0("tSNE_y{PC",paste0(range((1:K.Y)[axes.pos]),collapse ="-"),"}"),clus=TRUE)
+                                  ylab=paste0("tSNE_y{PC",paste0(range((1:K.Y)[axes.pos]),collapse ="-"),"}"),
+                                  clus=TRUE,
+                                  min.clus.size = 2)
       }
       else {
         if (is.null(clus.lab)) aux.name <- rep(left.lab,n)
@@ -593,7 +600,8 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
                                    labels = aux.name,
                                    aest = aest.f(aux.name),
                                    xlab = paste0("tSNE_x{PC",paste0(range((1:K.Y)[axes.pos]),collapse ="-"),"}"),
-                                   ylab=paste0("tSNE_y{PC",paste0(range((1:K.Y)[axes.pos]),collapse ="-"),"}"),clus = FALSE)
+                                   ylab=paste0("tSNE_y{PC",paste0(range((1:K.Y)[axes.pos]),collapse ="-"),"}"),
+                                   clus = FALSE)
 
 
       }
