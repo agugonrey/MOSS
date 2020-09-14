@@ -95,7 +95,8 @@ If at least one of the blocks in 'data.blocks' is of class FBM, is(B,'FBM') is T
    \item \strong{PC1_2.plot:} Plot of the first two principal components.
    \item \strong{tSNE.plot:} Plot with the tSNE mapping onto two dimensions.
    \item \strong{clus.obj:} The output of function tsne2clus.
-   \item \strong{subLabels_vs_cluster:} Plot of the Kruskal-Wallis (or Chi-square) statistics of the association test between PC and pre-established subjects groups.
+   \item \strong{subLabels_vs_PCs:} Plot of the Kruskal-Wallis (or Chi-square) statistics of the association test between PC (or selected subjects) and pre-established subjects groups.
+   \item \strong{clusters_vs_PCs:} Plot of the Kruskal-Wallis (or Chi-square) statistics of the association test between PC (or selected subjects) and detected clusters.
  }
  
 }

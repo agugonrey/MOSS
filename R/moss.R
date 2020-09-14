@@ -78,7 +78,8 @@
 #'    \item \strong{PC1_2.plot:} Plot of the first two principal components.
 #'    \item \strong{tSNE.plot:} Plot with the tSNE mapping onto two dimensions.
 #'    \item \strong{clus.obj:} The output of function tsne2clus.
-#'    \item \strong{subLabels_vs_cluster:} Plot of the Kruskal-Wallis (or Chi-square) statistics of the association test between PC and pre-established subjects groups.
+#'    \item \strong{subLabels_vs_PCs:} Plot of the Kruskal-Wallis (or Chi-square) statistics of the association test between PC (or selected subjects) and pre-established subjects groups.
+#'    \item \strong{clusters_vs_PCs:} Plot of the Kruskal-Wallis (or Chi-square) statistics of the association test between PC (or selected subjects) and detected clusters.
 #'  }
 #'  
 #' }
@@ -629,14 +630,16 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
     pc.aux <- out$dense$Global$u
   }
   else  pc.aux <- out$dense$u
-
+  
   #Evaluating the overlap between principal components and pre-defined groups of subjects.
   if (plot == TRUE & is.null(clus.lab) == FALSE) {
-    message("Evaluating overlap between subjects selected and pre-established labels.")
+    if  (is.null(dg.grid.left) == TRUE | alpha.left ==0) if(verbose) message("Evaluating association between PCs selected and pre-established labels.")
+    if (is.null(dg.grid.left) == FALSE & alpha.left > 0) if(verbose) message("Evaluating overlap between groups of selected subjects and pre-established labels.")
+    
     options(na.action="na.pass")
     Z <- stats::model.matrix(~-1 + clus.lab)
     colnames(Z) <- sort(unique(clus.lab[!is.na(clus.lab)]))
-
+    
     #Creating a data.frame to store association between clusters and labels.
     clus.w <- do.call("rbind",lapply(1 : ncol(Z) , function(i) {
       if (is.null(dg.grid.left) == FALSE & alpha.left > 0) {
@@ -645,7 +648,7 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
           return(c("Est"=test$statistic))
         })
       }
-
+      
       else {
         x2.res <- apply(as.matrix(pc.aux),2,function(x) {
           test <- stats::kruskal.test(x,Z[,i])
@@ -657,11 +660,11 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
       colnames(x2.res) <- c("Est","PC","Label")
       return(x2.res)
     }))
-
+    
     if (is.null(dg.grid.left) == FALSE & alpha.left > 0) test.name <- "Chi-square statistics"
     else test.name <- "Kruskal-Wallis statistics"
-
-    out$subLabels_vs_cluster <- ggplot2::ggplot(data=clus.w, ggplot2::aes_string(x="PC", y="Est",col="Label",shape="Label")) +
+    
+    out$subLabels_vs_PCs <- ggplot2::ggplot(data=clus.w, ggplot2::aes_string(x="PC", y="Est",col="Label",shape="Label")) +
       ggplot2::scale_shape_manual(values=c(8:(8 + ncol(Z))))+
       ggplot2::scale_color_manual(values = viridis::viridis(ncol(Z)+1,option="A")[-(ncol(Z)+1)])+
       ggplot2::geom_point(size=2.5)+
@@ -670,8 +673,57 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
       ggplot2::geom_line()+
       ggplot2::theme_minimal()+
       ggplot2::theme(legend.position = "top")
-
+    
   }
 
+  #Evaluating the overlap between principal components and clusters of subjects.
+  if (plot == TRUE & 
+      clus == TRUE & 
+      length(unique(out$clus.obj$dbscan.res$cluster[out$clus.obj$dbscan.res$cluster != 0])) > 1) {
+    if  (is.null(dg.grid.left) == TRUE | alpha.left ==0) if(verbose) message("Evaluating association between PCs and detected clusters.")
+    if (is.null(dg.grid.left) == FALSE & alpha.left > 0) if(verbose) message("Evaluating overlap between groups of selected subjects and detected clusters.")
+    
+    clus.lab <- out$clus.obj$dbscan.res$cluster
+    clus.lab[clus.lab == 0] <- NA
+    
+    options(na.action="na.pass")
+    Z <- stats::model.matrix(~-1 + as.factor(clus.lab))
+    colnames(Z) <- paste("Cluster",1:ncol(Z))
+    
+    #Creating a data.frame to store association between PCs and clusters.
+    clus.w <- do.call("rbind",lapply(1 : ncol(Z) , function(i) {
+      if (is.null(dg.grid.left) == FALSE & alpha.left > 0) {
+        x2.res <- apply(as.matrix(out$sparse$u),2,function(x) {
+          suppressWarnings(test <- stats::chisq.test(table(x != 0,Z[,i])))
+          return(c("Est"=test$statistic))
+        })
+      }
+      
+      else {
+        x2.res <- apply(as.matrix(pc.aux),2,function(x) {
+          test <- stats::kruskal.test(x,Z[,i])
+          return(c("Est"=test$statistic))
+        })
+      }
+      x2.res <- as.data.frame(x2.res)
+      x2.res <- cbind(x2.res,1:K.Y,colnames(Z)[i])
+      colnames(x2.res) <- c("Est","PC","Cluster")
+      return(x2.res)
+    }))
+    
+    if (is.null(dg.grid.left) == FALSE & alpha.left > 0) test.name <- "Chi-square statistics"
+    else test.name <- "Kruskal-Wallis statistics"
+    
+    out$clusters_vs_PCs <- ggplot2::ggplot(data=clus.w, ggplot2::aes_string(x="PC", y="Est",col="Cluster",shape="Cluster")) +
+      ggplot2::scale_shape_manual(values=c(8:(8 + ncol(Z))))+
+      ggplot2::scale_color_manual(values = viridis::viridis(ncol(Z)+1,option="D")[-(ncol(Z)+1)])+
+      ggplot2::geom_point(size=2.5)+
+      ggplot2::scale_x_continuous("PC index")+
+      ggplot2::scale_y_continuous(test.name)+
+      ggplot2::geom_line()+
+      ggplot2::theme_minimal()+
+      ggplot2::theme(legend.position = "top")
+    
+  }
   return(out)
 }
