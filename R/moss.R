@@ -204,8 +204,9 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
   if (use_fbm == TRUE) {
     if (!requireNamespace("bigstatsr",quietly = TRUE)) stop("Package 'bigstatsr' needs to be installed to handle FBM objects.")
     else {
-      if (verbose) message("Turn omic block into FBM objects.")
-      data.blocks <- lapply(data.blocks, bigstatsr::as_FBM)
+      if (verbose) message("Turning omic blocks into FBM objects.")
+      if (grepl(method,pattern = "-lda")) data.blocks[-resp.block] <- lapply(data.blocks[-resp.block], bigstatsr::as_FBM)
+      if (!grepl(method,pattern = "-lda")) data.blocks <- lapply(data.blocks, bigstatsr::as_FBM)
     }
   }
   
@@ -260,14 +261,14 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
   if (!any(method %in% c("pca","mbpca","pls","mbpls","rrr","mbrrr","pca-lda","mbpca-lda","pls-lda","mbpls-lda","rrr-lda","mbrrr-lda"))) {
     stop("Method ",method," not supported. Try one of these: pca, mbpca, pls, mbpls, rrr, mbrrr, pca-lda, mbpca-lda, pls-lda, mbpls-lda, rrr-lda, or mbrrr-lda.")
   }
-
+  
   #At least two latent factor for tSNE.
   if (is.null(tSNE) == FALSE & K.Y < 2) stop("Number of latent factors needs to be larger or equal than 2 for tSNE projection.")
 
   #Only non-missing data accepted.
   if (verbose) message("Checking for missing values.")
   if (any(unlist(lapply(data.blocks, function(x) prepro_na(x) > 0)))) stop("Needs to imput NA's before runing R")
-
+  
   #If method is a supervised one, the first response block is chosen: Y = data.blocks[[1]]
   if (!any(method %in% c("pca","mbpca"))) {
     if (is.null(resp.block)) {
