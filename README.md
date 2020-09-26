@@ -10,7 +10,7 @@ Agustin Gonzalez-Reymundez, Alexander Grueneberg, and Ana I. Vazquez.
 
 ```
 library(devtools)
-install_github("agugonrey/MOSS")
+install_github("agugonrey/MOSS", dependencies = TRUE)
 library("MOSS")
 ```
 
