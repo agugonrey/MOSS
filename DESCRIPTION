@@ -10,7 +10,7 @@ Description: High dimensionality, noise and heterogeneity among samples and omic
     b. Imposing sparsity constraints at both subjects (rows) and features (columns) activities to remove excessive noise.
     c. Using Elastic Net type of shrinkage, to balance between ridge and lasso types of penalty and allow the selection of groups of subjects or features potentially correlated.
     d. Allowing both linear and non-linear projections (via t-Stochastic Neighbor Embedding) of the omic data to detect undesired sources of variation (e.g. batch and other artifact effects), and reveal cluster in very convoluted data.
-    e. Using the flexible framework of generalized SVD to extend the above ideas into unsupervised and supervised problems.
+    e. Using the flexible framework of sparse SVD to extend the above ideas into unsupervised and supervised problems.
 Imports:
     stats,
     cluster,
@@ -36,5 +36,6 @@ Suggests:
     MASS,
     knitr,
     rmarkdown,
-    testthat
+    testthat,
+    qpdf
 VignetteBuilder: knitr

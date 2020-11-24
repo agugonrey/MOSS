@@ -1,4 +1,4 @@
-context("Reduced rank regression")
+context("Low rank regression")
 
 test_that("Testing if MOSS gives same results than matrix general LM", {
   set.seed(42)
@@ -9,7 +9,7 @@ test_that("Testing if MOSS gives same results than matrix general LM", {
   
   b.moss <- moss(data.blocks = list(y,X),scale. = F,
                  resp.block = 1,
-                 method = 'rrr',
+                 method = 'lrr',
                  K.X=10,
                  K.Y = 1)$B
   
@@ -29,7 +29,7 @@ test_that("Testing if MOSS gives same results than matrix general LM (multivaria
   
   b.moss <- moss(data.blocks = list(y,X),scale. = F,
                  resp.block = 1,
-                 method = 'rrr',
+                 method = 'lrr',
                  K.X=min(dim(X)),
                  K.Y = min(dim(X), dim(y)))$B
   expect_equal(b.prod , b.moss)

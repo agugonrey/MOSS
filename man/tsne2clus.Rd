@@ -62,11 +62,10 @@ The function takes the outcome of pca2tsne (or a list containing any two-columns
 }
 \examples{
 \dontrun{
-library(ggplot2)
-library(dbscan)
-library(Rtsne)
+library(MOSS)
 library(viridis)
 library(cluster)
+library(annotate)
 
 #Using the 'iris' data tow show cluster definition via BHI criterion.
 set.seed(42)
@@ -86,16 +85,15 @@ set.seed(42)
  eps_range = c(0,3))
 
 #Example of usage within moss.
-library("MOSS")
 set.seed(43)
 sim_blocks <- simulate_data()$sim_blocks
-moss(sim_blocks[-4],
-     tSNE=list(perp=50,
-               n.samples=1,
-               n.iter=1e3),
-               clus=TRUE,
-               plot=TRUE)$clus.obj$clusters.plot
- }
+out <- moss(sim_blocks[-4],
+     tSNE=TRUE,
+     clus=list(eps_range=c(0,4),eps_res=100,min_clus_size=1),
+     plot=TRUE)
+out$clus_plot      
+out$clusters_vs_PCs
+}
 }
 \references{
 \itemize{

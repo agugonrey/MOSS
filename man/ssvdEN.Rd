@@ -120,16 +120,19 @@ all.equal(unique(colSums(out$v != 0)), s.v)
 
 #Ridge penalties.
 all.equal(sum(ssvdEN(X,dg.spar.features = s.v,alpha.f = 0)$v != 0),ncol(X))
-all.equal(unique(colSums(ssvdEN(X,dg.spar.features = s.v, n.PC=5,alpha.f = 0)$v != 0)), ncol(X))
+all.equal(unique(colSums(ssvdEN(X,dg.spar.features = s.v, n.PC=5,alpha.f = 0)$v != 0)), 
+ncol(X))
 
 all.equal(sum(ssvdEN(X,dg.spar.subjects = s.u,alpha.s = 0)$u != 0),nrow(X))
-all.equal(unique(colSums(ssvdEN(X,dg.spar.subjects = s.u, n.PC=5,alpha.s = 0)$u != 0)), nrow(X))
+all.equal(unique(colSums(ssvdEN(X,dg.spar.subjects = s.u, n.PC=5,alpha.s = 0)$u != 0)), 
+nrow(X))
 
 out <- ssvdEN(X,dg.spar.features = s.v,dg.spar.subjects = s.u,alpha.f = 0,alpha.s = 0)
 all.equal(sum(out$u != 0), nrow(X))
 all.equal(sum(out$v != 0), ncol(X))
 
-out <- ssvdEN(X,dg.spar.features = s.v,dg.spar.subjects = s.u,n.PC=10,alpha.f = 0,alpha.s = 0)
+out <- ssvdEN(X,dg.spar.features = s.v,dg.spar.subjects = s.u,n.PC=10,alpha.f = 0,
+alpha.s = 0)
 all.equal(unique(colSums(out$u != 0)), nrow(X))
 all.equal(unique(colSums(out$v != 0)), ncol(X))
 
@@ -142,22 +145,12 @@ all(unique(colSums(ssvdEN(X,dg.spar.subjects = s.u, n.PC=5,alpha.s = 0.5)$u != 0
 
 #Elastic Net penalties with exact degrees of sparsity.
 sum(ssvdEN(X,dg.spar.features = s.v,alpha.f = 0.5,exact.dg=TRUE)$v != 0) == s.v
-all(unique(colSums(ssvdEN(X,dg.spar.features = s.v, n.PC=5,alpha.f = 0.5,exact.dg=TRUE)$v != 0)) == s.v)
+all(unique(colSums(ssvdEN(X,dg.spar.features = s.v, n.PC=5,
+alpha.f = 0.5,exact.dg=TRUE)$v != 0)) == s.v)
 
 sum(ssvdEN(X,dg.spar.subjects = s.u,alpha.s = 0.5,exact.dg=TRUE)$u != 0) == s.u
-all(unique(colSums(ssvdEN(X,dg.spar.subjects = s.u, n.PC=5,alpha.s = 0.5,exact.dg=TRUE)$u != 0)) == s.u)
-
-#Example of usage within moss.
-
-out <- moss(sim_blocks[-4],
-     K.X=1,
-     dg.grid.right = 22,
-     dg.grid.left = 11,
-     alpha.right = 1,
-     alpha.left = 1)
-
-colSums(out$sparse$u!=0)
-colSums(out$sparse$v!=0)
+all(unique(colSums(ssvdEN(X,dg.spar.subjects = s.u, n.PC=5,
+alpha.s = 0.5,exact.dg=TRUE)$u != 0)) == s.u)
 }
 \references{
 \itemize{

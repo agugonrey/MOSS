@@ -64,45 +64,6 @@
 #'
 #' #Tuning sparsity degree for features.
 #' out <- ssvdEN_sol_path(X)
-#'
-#' \dontrun{
-#' #Graphic displays.
-#' library('ggpmisc')
-#' library('ggplot2')
-#' library('viridis')
-# 
-#' set.seed(43)
-#'
-#' #Extracting simulated omic blocks.
-#' sim_data <- simulate_data()
-#' sim_blocks <- sim_data$sim_blocks
-#' 
-#' #Extracting subjects and features labels.
-#' lab.sub <- sim_data$labels$lab.sub
-#' lab.feat <- sim_data$labels$lab.feat
-#' 
-#' out <- moss(sim_blocks[-4],
-#'      K.X=2,
-#'      dg.grid.right = seq(1,200,by=10),
-#'      dg.grid.left = seq(1,100,by=2),
-#'      alpha.right = 0.5,
-#'      alpha.left = 1,plot=TRUE)
-#'
-#' #Visualizing two first PCs.
-#' out$PC1_2.plot
-#'
-#' #Checking PEV and derivatives across the grids with subjects/features degrees of sparsity values.
-#' out$tun_dgSpar.plot
-#'
-#' #Checking overlap with 'signal' subjects and features. 
-#' # Notice the high specificity and lower sensitivity!
-#' table(out$sparse$u[,1]!=0,lab.sub)
-#' table(out$sparse$u[,2]!=0,lab.sub)
-#'
-#' table(out$sparse$v[,1]!=0,lab.feat)
-#' table(out$sparse$v[,2]!=0,lab.feat)
-#' }
-
 ssvdEN_sol_path <- function(O, center=TRUE,scale=TRUE, dg.grid.right = 1 : (ncol(O)-1), dg.grid.left=NULL,n.PC=1, svd.0 = NULL,
                             alpha.f=1,alpha.s=1,maxit=500,tol=1E-03,approx=FALSE,plot=FALSE,ncores=1,
                             verbose=TRUE,left.lab="Subjects",right.lab="Features",exact.dg=FALSE) {

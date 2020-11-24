@@ -12,7 +12,6 @@
 #' @examples
 #' \dontrun{
 #' library("MOSS")
-#' library("Rtsne")
 #' sim_blocks <-simulate_data()$sim_blocks
 #' 
 #' #Example of pca2tsne usage.
@@ -24,7 +23,7 @@
 #'      tSNE=list(perp=50,
 #'                n.samples=1,
 #'                n.iter=1e3),
-#'                plot=TRUE)$tSNE.plot
+#'                plot=TRUE)$tSNE_plot
 #' }
 pca2tsne <- function(Z, perp = 50, n.samples = 1, n.iter=1000) {
   

@@ -25,7 +25,6 @@ The function is inspired by the iterative procedure discussed in Taskesen et al.
 \examples{
 \dontrun{
 library("MOSS")
-library("Rtsne")
 sim_blocks <-simulate_data()$sim_blocks
 
 #Example of pca2tsne usage.
@@ -37,7 +36,7 @@ moss(sim_blocks[-4],
      tSNE=list(perp=50,
                n.samples=1,
                n.iter=1e3),
-               plot=TRUE)$tSNE.plot
+               plot=TRUE)$tSNE_plot
 }
 }
 \references{
