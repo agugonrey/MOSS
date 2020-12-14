@@ -12,16 +12,17 @@ prepro_sub <- function(X,scale.arg,norm.arg) {
   if(any(vapply(c("matrix","FBM","array"), function (x) inherits(X,x),TRUE))) {
     if (inherits(X, "FBM") == TRUE) {
         bigstatsr::big_apply(X, function(x, ind) {
-        if (scale.arg) X[,ind] <- scale(x[,ind])
-        if (norm.arg) X[,ind] <- x[,ind] / sqrt(ncol(X))
+          if (norm.arg) X[,ind] <- x[,ind] / sqrt(ncol(X))
+          if (scale.arg) X[,ind] <- scale(x[,ind])
+        
       },
       a.combine = 'c',
       ind = seq_len(ncol(X)),
       block.size = bigstatsr::block_size(ncol(X), 1))
     }
     else {
-      if (scale.arg) X <- scale(X)
       if (norm.arg) X <- X / ncol(X)
+      if (scale.arg) X <- scale(X)
     }
   }
   else stop("Only objects of class 'array', 'matrix' or 'FBM' supported.")
