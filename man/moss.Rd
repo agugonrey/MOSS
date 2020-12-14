@@ -180,8 +180,6 @@ library(fpc)
 
 set.seed(43)
 
-#Extracting simulated omic blocks.
-
 #Example2: sparse PCA with t-SNE, clustering, and association with predefined groups of subjects.
 out <- moss(sim_blocks[-4],
      method="pca",
@@ -194,7 +192,7 @@ out <- moss(sim_blocks[-4],
      clus.lab=lab.sub,
      plot=TRUE)
      
-#This shows obtained clusters with labels from pre-defined groups of subjects.
+#This shows clusters obtained with labels from pre-defined groups of subjects.
 out$clus_plot
 
 #This shows the statistical overlap between PCs and the pre-defined groups of subjects.
@@ -231,6 +229,8 @@ out <- moss(sim_blocks[-4],
      resp.block=3,
      plot=TRUE)
  out$clus_plot
+ 
+ # Get some measure of accuracy at detecting features with signal versus background noise.
  table(out$sparse$u[,1] != 0,lab.feat[1:2000])
  table(out$sparse$v[,1] != 0,lab.feat[2001:3000])
 
