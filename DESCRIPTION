@@ -35,5 +35,6 @@ Suggests:
     knitr,
     rmarkdown,
     testthat,
-    qpdf
+    qpdf,
+    remotes
 VignetteBuilder: knitr
