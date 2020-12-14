@@ -69,6 +69,7 @@ O1[1:20, 1:150] <- 1
 O1 <- O1 + rnorm(5e5, mean=0,sd=0.5)
 O2[71:90, 71:200] <- 1
 O2 <- O2 + rnorm(5e5, mean=0,sd=0.5)
+
 #Simulating a continous response blocks.
 O3 <- 3*O1 - 5*O2 + rnorm(5e5, mean=0,sd=0.5)
 
