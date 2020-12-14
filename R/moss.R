@@ -582,7 +582,7 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
       # Eigenvectors obtained without LDA.
       else {
         if (is.null(clus)) {
-          out$PC1_2.plot <- tsne2clus(list(Y=scale(svd0$u[,1:2])),
+          out$PC1_2_plot <- tsne2clus(list(Y=scale(svd0$u[,1:2])),
                                       labels = aux.name,
                                       aest = aest.f(aux.name),
                                       xlab = "PC1",ylab="PC2",clus=FALSE)
