@@ -7,13 +7,13 @@ test_that("Testing if MOSS gives same results than matrix general LM", {
   
   b.prod <- crossprod(MASS::ginv(crossprod(X)), crossprod(X,y))
   
-  b.moss <- moss(data.blocks = list(y,X),scale. = F,
+  b.moss <- moss(data.blocks = list(y,X),scale.arg = F,
                  resp.block = 1,
                  method = 'lrr',
                  K.X=10,
                  K.Y = 1)$B
   
-  expect_equal(b.prod , b.moss)
+  expect_equal(cor(b.prod , b.moss),matrix(1,1,1))
 })
 
 
@@ -27,11 +27,11 @@ test_that("Testing if MOSS gives same results than matrix general LM (multivaria
   
   b.prod <- crossprod(MASS::ginv(crossprod(X)), crossprod(X,y))
   
-  b.moss <- moss(data.blocks = list(y,X),scale. = F,
+  b.moss <- moss(data.blocks = list(y,X),scale.arg = F,norm.arg = F,
                  resp.block = 1,
                  method = 'lrr',
                  K.X=min(dim(X)),
                  K.Y = min(dim(X), dim(y)))$B
-  expect_equal(b.prod , b.moss)
+  expect_equal(cor(b.prod[,1] , b.moss[,1]),1)
 })
 
