@@ -9,8 +9,8 @@ Agustin Gonzalez-Reymundez, Alexander Grueneberg, and Ana I. Vazquez.
   The code below illustrates how to install and load MOSS.
 
 ```
-library(devtools)
-install_github("agugonrey/MOSS")
+#install.packages("remotes")
+remotes::install_github("agugonrey/MOSS")
 library("MOSS")
 ```
 
