@@ -1,4 +1,4 @@
-rrr_big <- function(X, Y=NULL, power=1, K.X=min(dim(X)) - 1, K.Y=1,verbose=T,lr.file = tempfile(),ncores=1,lr.return=F) {
+rrr_big <- function(X, Y=NULL, power=1, K.X=min(dim(X)) - 1, K.Y=1,verbose=T,ncores=1,lr.return=F) {
 
   if (is.null(Y)) {
     if (all(vapply(c('matrix','array','FBM'), function(x) inherits(X,x),TRUE) == FALSE)) 
@@ -46,13 +46,11 @@ rrr_big <- function(X, Y=NULL, power=1, K.X=min(dim(X)) - 1, K.Y=1,verbose=T,lr.
       #Filling up matrix R.
       count <- 0
       bigstatsr::big_apply(Y, a.FUN = function(y, ind) {
-        if (verbose) cat("Working chunk ",(count <<- count + 1),"of",ceiling(p_Y / bigstatsr::block_size(p_Y, 1)),".\n")
         R[, ind] <- crossprod(SVD.x$u, y[,ind] * p_Y)
         NULL
       },
       a.combine = 'c',
-      ind = seq_len(p_Y),
-      block.size = bigstatsr::block_size(p_Y, 1))
+      ind = seq_len(p_Y))
     }
     else R <-  crossprod(SVD.x$u, Y * p_Y)
 
@@ -65,27 +63,23 @@ rrr_big <- function(X, Y=NULL, power=1, K.X=min(dim(X)) - 1, K.Y=1,verbose=T,lr.
     #Creating matrix B.
     if (verbose) message("Getting 'L*R' (dimensions ",p_X," x ",p_Y , ").")
     if (inherits(L, "FBM") == TRUE | inherits(R, "FBM") == TRUE) {
-      LR <- bigstatsr::FBM(p_X, p_Y, create_bk = T,backingfile = lr.file)$save()
+      LR <- bigstatsr::FBM(p_X, p_Y, create_bk = T)$save()
       count <- 0
       if (inherits(L, "FBM") == TRUE) {
         bigstatsr::big_apply(LR, a.FUN = function(y, ind) {
-          if (verbose) cat("Working chunk ",(count <<- count + 1),"of",ceiling(p_Y / bigstatsr::block_size(p_Y, 1)),".\n")
-          LR[, ind] <- bigstatsr::big_prodMat(L, R[,ind], block.size = bigstatsr::block_size(K.X, 1))
+          LR[, ind] <- bigstatsr::big_prodMat(L, R[,ind])
           NULL
         },
         a.combine = 'c',
-        ind = seq_len(p_Y),
-        block.size = bigstatsr::block_size(p_Y, 1))
+        ind = seq_len(p_Y))
       }
       else {
         bigstatsr::big_apply(LR, a.FUN = function(y, ind) {
-          if (verbose) cat("Working chunk ",(count <<- count + 1),"of",ceiling(p_Y / bigstatsr::block_size(p_Y, 1)),".\n")
           LR[, ind] <- L %*% R[,ind]
           NULL
         },
         a.combine = 'c',
-        ind = seq_len(p_Y),
-        block.size = bigstatsr::block_size(p_Y, 1))
+        ind = seq_len(p_Y))
       }
     }
     else LR <- L %*% R
