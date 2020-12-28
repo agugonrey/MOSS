@@ -3,9 +3,9 @@
 #' This function concatenates multiple omic, allowing one of them to be a multivariate numeric response 'Y', or a univariate classification response (to allow both unsupervised and supervised omic integration).
 #' In general, omic blocks consisting of predictors are concatenated and normalized to create an extended omic matrix 'X'. 
 #' All the different applications of multivariate techniques within MOSS return a matrix 'B'. 
-#' MOSS allows to fit many different multivariate techniques (e.g. B = X in pca; B = X'Y, for pls; B = (X'X)^-X'Y, for lrr).
+#' MOSS allows to generate results based on different matrices B (e.g. B = X in pca; B = X'Y, for pls; B = (X'X)^-X'Y, for lrr).
 #'
-#' Once 'dense' solutions for each technique are found (the result of SVD on a matrix B),
+#' Once 'dense' solutions are found (the result of SVD on a matrix B),
 #'  the function ssvdEN_sol_path is called to perform sparse SVD (sSVD) on a grid of possible degrees of sparsity (nu) 
 #'  for a possible value of the elastic net parameter (alpha).
 #' The sSVD is performed using the algorithm of Shen and Huang (2008), extended to include Elastic Net type of regularization. 
@@ -59,7 +59,7 @@
 #' @param nu.v Same but for right eigen vectors. Defaults to NULL.
 #' @param alpha.u Elastic Net parameter for left eigenvectors. Numeric between 0 and 1. Defaults to 1.
 #' @param alpha.v  Elastic Net parameter for right eigenvectors. Numeric between 0 and 1. Defaults to 1.
-#' @param clus Arguments passed to the function tsne2clus as a list. Defaults to FALSE. If clus=TRUE, default parameters are used (eps_range=c(0,4), eps_res=100).
+#' @param cluster Arguments passed to the function tsne2clus as a list. Defaults to FALSE. If cluster=TRUE, default parameters are used (eps_range=c(0,4), eps_res=100).
 #' @param clus.lab A vector of same length than number of subjects with labels used to visualize clusters. Factor. Defaults to NULL. 
 #' When sparsity is imposed on the left eigenvectors, the association between non-zero loadings and labels' groups is shown by a Chi-2 statistics for each pc. When sparsity is not imposed, the association between labels and PC is addressed by a Kruskal-Wallis statistics.
 #' @param tSNE Arguments passed to the function pca2tsne as a list. Defaults to FALSE. If tSNE=T, default parameters are used (perp=50,n.samples=1,n.iter=1e3).
@@ -87,7 +87,7 @@
 #'    \item \strong{opt_dg_v} Selected degrees of sparsity for right eigenvectors. 
 #'    \item \strong{opt_dg_u:} Selected degrees of sparsity for left eigenvectors. 
 #'  }
-#'  \item Graphical displays: Depending on the values in 'plot','tSNE','clus', and 'clus.lab' arguments, the following ggplot objects can be obtained. They contain:\itemize{
+#'  \item Graphical displays: Depending on the values in 'plot','tSNE','cluster', and 'clus.lab' arguments, the following ggplot objects can be obtained. They contain:\itemize{
 #'    \item \strong{scree_plot:} Plots of eigenvalues and their first and second order empirical derivatives along PC indexes. 
 #'    \item \strong{tun_dgSpar_plot:} Plots with the PEV trajectory, as well as its first and second empirical derivatives along the degrees of sparsity path.
 #'    \item \strong{PC1_2_plot:} Plot of the first two principal components.
@@ -139,7 +139,7 @@
 #'      alpha.v = 0.5,
 #'      alpha.u = 1,
 #'      tSNE=TRUE,
-#'      clus=TRUE,
+#'      cluster=TRUE,
 #'      clus.lab=lab.sub,
 #'      plot=TRUE)
 #'      
@@ -157,7 +157,7 @@
 #'      alpha.v = 0.5,
 #'      alpha.u = 1,
 #'      tSNE=TRUE,
-#'      clus=TRUE,
+#'      cluster=TRUE,
 #'      clus.lab=lab.sub,
 #'      plot=TRUE)
 #'  out$clus_plot
@@ -176,7 +176,7 @@
 #'      alpha.v = 1,
 #'      alpha.u = 1,
 #'      tSNE=TRUE,
-#'      clus=TRUE,
+#'      cluster=TRUE,
 #'      clus.lab=lab.feat[1:2e3],
 #'      resp.block=3,
 #'      plot=TRUE)
@@ -189,7 +189,7 @@
 #' #Example5: PCA-LDA
 #' out <- moss(sim_blocks,
 #'      method="pca-lda",
-#'      clus=TRUE,
+#'      cluster=TRUE,
 #'      resp.block=4,
 #'      clus.lab=lab.sub,
 #'      plot=TRUE)
@@ -199,7 +199,7 @@
 moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.block=NULL,
                    K.X=5,K.Y=K.X,verbose=TRUE,ncores=1,
                    nu.u = NULL, nu.v=NULL,
-                   alpha.u=1,alpha.v=1,plot=FALSE,clus=FALSE,
+                   alpha.u=1,alpha.v=1,plot=FALSE,cluster=FALSE,
                    clus.lab=NULL,tSNE=FALSE,axes.pos=1:K.Y,approx.arg=FALSE,exact.dg=FALSE, use.fbm=FALSE) {
   
   #Inputs need to be a list of data matrices.
@@ -225,11 +225,11 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
   #Is tSNE being passed as logical?
   if (is.logical(tSNE) && (tSNE == FALSE)) tSNE <- NULL 
   
-  #Is clus being passed as logical?
-  if (is.logical(clus) && (clus == FALSE)) clus <- NULL 
+  #Is cluster being passed as logical?
+  if (is.logical(cluster) && (cluster == FALSE)) cluster <- NULL 
   
   #Always plot results if any of these conditions is met.
-  if (is.null(tSNE) == FALSE | is.null(clus) == FALSE | is.null(clus.lab) == FALSE) plot <- TRUE
+  if (is.null(tSNE) == FALSE | is.null(cluster) == FALSE | is.null(clus.lab) == FALSE) plot <- TRUE
   
   #Turning omic blocks into FBM.
   if (use.fbm == TRUE) {
@@ -279,7 +279,7 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
   if (is.null(tSNE) == FALSE) if(!requireNamespace("Rtsne",quietly = TRUE)) stop("Package 'Rtsne' needs to be installed to generate t-SNE projections.")
 
   #Checking if the right packages are present for dbscan.
-  if (is.null(clus) == FALSE) if(!requireNamespace("dbscan",quietly = TRUE)) stop("Package 'dbscan' needs to be installed for clustering.")
+  if (is.null(cluster) == FALSE) if(!requireNamespace("dbscan",quietly = TRUE)) stop("Package 'dbscan' needs to be installed for clustering.")
                              
   #Available methods.
   if (!any(method %in% c("pca","mbpca","pls","mbpls","lrr","mblrr","pca-lda","mbpca-lda","pls-lda","mbpls-lda","lrr-lda","mblrr-lda"))) {
@@ -556,51 +556,51 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
       
       # Eigenvectors obtained from method-LDA.
       if (grepl(method,pattern = '-lda')) {
-        if (is.null(clus)) {
+        if (is.null(cluster)) {
           out$PC1_2_plot <- tsne2clus(list(Y=scale(svd0$w.x[,1:2])),
                                       labels = aux.name,
                                       aest = aest.f(aux.name),
                                       xlab = "LDF1",ylab="LDF2",clus=FALSE)
         }
         else {
-          if (is.list(clus) == FALSE) {
-            clus <- NULL
-            clus$eps_range <- c(0,4)
-            clus$eps_res <- 100
-            clus$min_clus_size <- 2
+          if (is.list(cluster) == FALSE) {
+            cluster <- NULL
+            cluster$eps_range <- c(0,4)
+            cluster$eps_res <- 100
+            cluster$min_clus_size <- 2
           }
           if (verbose) message("Getting clusters via DBSCAN.")
           out$clus_plot <- tsne2clus(list(Y=scale(svd0$w.x[,1:2])),
                                      labels = aux.name,
                                      aest = aest.f(aux.name),
-                                     eps_range = clus$eps_range,eps_res = clus$eps_res,
+                                     eps_range = cluster$eps_range,eps_res = cluster$eps_res,
                                      xlab = "LDF1",ylab="LDF2",clus=TRUE,
-                                     min.clus.size = clus$min_clus_size)
+                                     min.clus.size = cluster$min_clus_size)
         }
       }
       
       # Eigenvectors obtained without LDA.
       else {
-        if (is.null(clus)) {
+        if (is.null(cluster)) {
           out$PC1_2_plot <- tsne2clus(list(Y=scale(svd0$u[,1:2])),
                                       labels = aux.name,
                                       aest = aest.f(aux.name),
                                       xlab = "PC1",ylab="PC2",clus=FALSE)
         }
         else {
-          if (is.list(clus) == FALSE) {
-            clus <- NULL
-            clus$eps_range <- c(0,4)
-            clus$eps_res <- 100
-            clus$min_clus_size <- 2
+          if (is.list(cluster) == FALSE) {
+            cluster <- NULL
+            cluster$eps_range <- c(0,4)
+            cluster$eps_res <- 100
+            cluster$min_clus_size <- 2
           }
           if (verbose) message("Getting clusters via DBSCAN.")
           out$clus_plot <- tsne2clus(list(Y=scale(svd0$u[,1:2])),
                                     labels = aux.name,
                                     aest = aest.f(aux.name),
-                                    eps_range =  clus$eps_range,eps_res =  clus$eps_res,
+                                    eps_range =  cluster$eps_range,eps_res =  cluster$eps_res,
                                     xlab = "PC1",ylab="PC2",clus=TRUE,
-                                    min.clus.size =  clus$min_clus_size)
+                                    min.clus.size =  cluster$min_clus_size)
         }
       }
     }
@@ -626,12 +626,12 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
                                    ylab=paste0("tSNE_y{LDF",1,"-",ncol(data.blocks[[1]]),"}"),
                                    clus = FALSE)
         # Should we cluster left factors after tSNE?
-        if (is.null(clus) == FALSE) {
-          if (is.list(clus) == FALSE) {
-            clus <- NULL
-            clus$eps_range <- c(0,4)
-            clus$eps_res <- 100
-            clus$min_clus_size <- 2
+        if (is.null(cluster) == FALSE) {
+          if (is.list(cluster) == FALSE) {
+            cluster <- NULL
+            cluster$eps_range <- c(0,4)
+            cluster$eps_res <- 100
+            cluster$min_clus_size <- 2
           }
           
           
@@ -641,11 +641,11 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
           out$clus_plot <- tsne2clus(tSNE,
                                      labels = aux.name,
                                      aest = aest.f(aux.name),
-                                     eps_range = clus$eps_range,eps_res = clus$eps_res,
+                                     eps_range = cluster$eps_range,eps_res = cluster$eps_res,
                                      xlab = paste0("tSNE_x{LDF",paste0(range((1:K.Y)[axes.pos]),collapse ="-"),"}"),
                                      ylab=paste0("tSNE_y{LDF",paste0(range((1:K.Y)[axes.pos]),collapse ="-"),"}"),
                                      clus=TRUE,
-                                     min.clus.size = clus$min_clus_size)
+                                     min.clus.size = cluster$min_clus_size)
         }
       }
       
@@ -666,12 +666,12 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
                                    clus = FALSE)
         
         #Should we cluster left factors after tSNE?
-        if (is.null(clus) == F) {
-          if (is.list(clus) == FALSE) {
-            clus <- NULL
-            clus$eps_range <- c(0,4)
-            clus$eps_res <- 100
-            clus$min_clus_size <- 2
+        if (is.null(cluster) == F) {
+          if (is.list(cluster) == FALSE) {
+            cluster <- NULL
+            cluster$eps_range <- c(0,4)
+            cluster$eps_res <- 100
+            cluster$min_clus_size <- 2
           }
           
           if (is.null(clus.lab)) aux.name <- rep(left.lab, n)
@@ -680,11 +680,11 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
           out$clus_plot <- tsne2clus(tSNE,
                                     labels = aux.name,
                                     aest = aest.f(aux.name),
-                                    eps_range = clus$eps_range,eps_res = clus$eps_res,
+                                    eps_range = cluster$eps_range,eps_res = cluster$eps_res,
                                     xlab = paste0("tSNE_x{PC",paste0(range((1:K.Y)[axes.pos]),collapse ="-"),"}"),
                                     ylab=paste0("tSNE_y{PC",paste0(range((1:K.Y)[axes.pos]),collapse ="-"),"}"),
                                     clus=TRUE,
-                                    min.clus.size = clus$min_clus_size)
+                                    min.clus.size = cluster$min_clus_size)
         }
       }    
     }
@@ -767,7 +767,7 @@ moss <- function(data.blocks, scale.arg=TRUE, norm.arg=TRUE,method="pca",resp.bl
 
   #Evaluating the overlap between principal components and clusters of subjects.
   if (plot == TRUE & 
-      is.null(clus) == FALSE & 
+      is.null(cluster) == FALSE & 
       length(unique(out$clus_plot$dbscan.res$cluster[out$clus_plot$dbscan.res$cluster != 0])) > 1) {
     if  (is.null(nu.u) == TRUE | alpha.u ==0) if(verbose) message("Evaluating association between PCs and detected clusters.")
     if (is.null(nu.u) == FALSE & alpha.u > 0) if(verbose) message("Evaluating overlap between groups of selected subjects and detected clusters.")

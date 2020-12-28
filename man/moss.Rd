@@ -19,7 +19,7 @@ moss(
   alpha.u = 1,
   alpha.v = 1,
   plot = FALSE,
-  clus = FALSE,
+  cluster = FALSE,
   clus.lab = NULL,
   tSNE = FALSE,
   axes.pos = 1:K.Y,
@@ -57,7 +57,7 @@ moss(
 
 \item{plot}{Should results be plotted? Logical. Defaults to FALSE.}
 
-\item{clus}{Arguments passed to the function tsne2clus as a list. Defaults to FALSE. If clus=TRUE, default parameters are used (eps_range=c(0,4), eps_res=100).}
+\item{cluster}{Arguments passed to the function tsne2clus as a list. Defaults to FALSE. If cluster=TRUE, default parameters are used (eps_range=c(0,4), eps_res=100).}
 
 \item{clus.lab}{A vector of same length than number of subjects with labels used to visualize clusters. Factor. Defaults to NULL. 
 When sparsity is imposed on the left eigenvectors, the association between non-zero loadings and labels' groups is shown by a Chi-2 statistics for each pc. When sparsity is not imposed, the association between labels and PC is addressed by a Kruskal-Wallis statistics.}
@@ -89,7 +89,7 @@ If at least one of the blocks in 'data.blocks' is of class FBM, is(B,'FBM') is T
    \item \strong{opt_dg_v} Selected degrees of sparsity for right eigenvectors. 
    \item \strong{opt_dg_u:} Selected degrees of sparsity for left eigenvectors. 
  }
- \item Graphical displays: Depending on the values in 'plot','tSNE','clus', and 'clus.lab' arguments, the following ggplot objects can be obtained. They contain:\itemize{
+ \item Graphical displays: Depending on the values in 'plot','tSNE','cluster', and 'clus.lab' arguments, the following ggplot objects can be obtained. They contain:\itemize{
    \item \strong{scree_plot:} Plots of eigenvalues and their first and second order empirical derivatives along PC indexes. 
    \item \strong{tun_dgSpar_plot:} Plots with the PEV trajectory, as well as its first and second empirical derivatives along the degrees of sparsity path.
    \item \strong{PC1_2_plot:} Plot of the first two principal components.
@@ -105,10 +105,10 @@ If at least one of the blocks in 'data.blocks' is of class FBM, is(B,'FBM') is T
 This function concatenates multiple omic, allowing one of them to be a multivariate numeric response 'Y', or a univariate classification response (to allow both unsupervised and supervised omic integration).
 In general, omic blocks consisting of predictors are concatenated and normalized to create an extended omic matrix 'X'. 
 All the different applications of multivariate techniques within MOSS return a matrix 'B'. 
-MOSS allows to fit many different multivariate techniques (e.g. B = X in pca; B = X'Y, for pls; B = (X'X)^-X'Y, for lrr).
+MOSS allows to generate results based on different matrices B (e.g. B = X in pca; B = X'Y, for pls; B = (X'X)^-X'Y, for lrr).
 }
 \details{
-Once 'dense' solutions for each technique are found (the result of SVD on a matrix B),
+Once 'dense' solutions are found (the result of SVD on a matrix B),
  the function ssvdEN_sol_path is called to perform sparse SVD (sSVD) on a grid of possible degrees of sparsity (nu) 
  for a possible value of the elastic net parameter (alpha).
 The sSVD is performed using the algorithm of Shen and Huang (2008), extended to include Elastic Net type of regularization. 
@@ -188,7 +188,7 @@ out <- moss(sim_blocks[-4],
      alpha.v = 0.5,
      alpha.u = 1,
      tSNE=TRUE,
-     clus=TRUE,
+     cluster=TRUE,
      clus.lab=lab.sub,
      plot=TRUE)
      
@@ -206,7 +206,7 @@ out <- moss(sim_blocks[-4],
      alpha.v = 0.5,
      alpha.u = 1,
      tSNE=TRUE,
-     clus=TRUE,
+     cluster=TRUE,
      clus.lab=lab.sub,
      plot=TRUE)
  out$clus_plot
@@ -224,7 +224,7 @@ out <- moss(sim_blocks[-4],
      alpha.v = 1,
      alpha.u = 1,
      tSNE=TRUE,
-     clus=TRUE,
+     cluster=TRUE,
      clus.lab=lab.feat[1:2e3],
      resp.block=3,
      plot=TRUE)
@@ -237,7 +237,7 @@ out <- moss(sim_blocks[-4],
 #Example5: PCA-LDA
 out <- moss(sim_blocks,
      method="pca-lda",
-     clus=TRUE,
+     cluster=TRUE,
      resp.block=4,
      clus.lab=lab.sub,
      plot=TRUE)
