@@ -4,7 +4,7 @@ Title: MOSS: Multi-omic integration via sparse singular value decomposition
 Version: 0.1.0
 Date: 2019-08-09
 Author: Agustin Gonzalez-Reymundez, Alexander Grueneberg, Ana I. Vazquez.
-Maintainer: Agustin Gonzalez-Reymundez <gonza650@msu.edu>
+Maintainer: Agustin Gonzalez-Reymundez <agugonrey@gmail.com>
 Description: High dimensionality, noise and heterogeneity among samples and omic features challenge the rational integration of molecular information. Here we present an implementation of sparse general SVD to deal with these limitations, by:
     a. Obtaining the main axes of variation of the data, to capture the source of independent information across omic blocks.
     b. Imposing sparsity constraints at both subjects (rows) and features (columns) activities to remove excessive noise.
