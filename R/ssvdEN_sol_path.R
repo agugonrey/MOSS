@@ -62,8 +62,8 @@
 #' sim_blocks <- simulate_data()$sim_blocks
 #' X <- sim_blocks$`Block 3`
 #'
-#' #Tuning sparsity degree for features.
-#' out <- ssvdEN_sol_path(X)
+#' #Tuning sparsity degree for features (increments of 20 units).
+#' out <- ssvdEN_sol_path(X,dg.grid.right = seq(1,1000,by=20))
 ssvdEN_sol_path <- function(O, center=TRUE,scale=TRUE, dg.grid.right = 1 : (ncol(O)-1), dg.grid.left=NULL,n.PC=1, svd.0 = NULL,
                             alpha.f=1,alpha.s=1,maxit=500,tol=1E-03,approx=FALSE,plot=FALSE,ncores=1,
                             verbose=TRUE,left.lab="Subjects",right.lab="Features",exact.dg=FALSE) {

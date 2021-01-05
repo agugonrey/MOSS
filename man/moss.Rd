@@ -166,8 +166,8 @@ lab.sub <- sim_data$labels$lab.sub
 lab.feat <- sim_data$labels$lab.feat
 out <- moss(sim_blocks[-4],
      method="pca",
-     nu.v = seq(1,200,by=10),
-     nu.u = seq(1,100,by=2),
+     nu.v = seq(1,200,by=20),
+     nu.u = seq(1,100,by=10),
      alpha.v = 0.5,
      alpha.u = 1)
 

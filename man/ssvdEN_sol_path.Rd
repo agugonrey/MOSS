@@ -105,8 +105,8 @@ library("MOSS")
 sim_blocks <- simulate_data()$sim_blocks
 X <- sim_blocks$`Block 3`
 
-#Tuning sparsity degree for features.
-out <- ssvdEN_sol_path(X)
+#Tuning sparsity degree for features (increments of 20 units).
+out <- ssvdEN_sol_path(X,dg.grid.right = seq(1,1000,by=20))
 }
 \references{
 \itemize{

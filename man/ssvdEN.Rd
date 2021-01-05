@@ -97,7 +97,6 @@ out <- ssvdEN(X, approx.arg = TRUE)
 #Uses bigstatsr to get approximated singular vectors and values of a Filebacked Big Matrix.
 library(bigstatsr)
 out <- ssvdEN(as_FBM(X), approx.arg = TRUE)
-}
 
 #Sampling a number of subjects and features for a fix sparsity degree.
 s.u <- sample(1:nrow(X), 1)
@@ -151,6 +150,7 @@ alpha.f = 0.5,exact.dg=TRUE)$v != 0)) == s.v)
 sum(ssvdEN(X,dg.spar.subjects = s.u,alpha.s = 0.5,exact.dg=TRUE)$u != 0) == s.u
 all(unique(colSums(ssvdEN(X,dg.spar.subjects = s.u, n.PC=5,
 alpha.s = 0.5,exact.dg=TRUE)$u != 0)) == s.u)
+}
 }
 \references{
 \itemize{
