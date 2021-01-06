@@ -12,7 +12,7 @@ Description: High dimensionality, noise and heterogeneity among samples and omic
     d. Allowing both linear and non-linear projections (via t-Stochastic Neighbor Embedding) of the omic data to detect undesired sources of variation (e.g. batch and other artifact effects), and reveal cluster in very convoluted data.
     e. Using the flexible framework of sparse SVD to extend the above ideas into unsupervised and supervised problems.
     References: 
-    1. 	Gonzalez-Reymúndez A., Vazquez A.I. 2020. Multi-omic signatures identify pan-cancer classes of tumors beyond tissue of origin. Sci Rep. 10: 8341. doi:10.1038/s41598-020-65119-5.
+    1. 	Gonzalez-Reymundez A., Vazquez A.I. 2020. Multi-omic signatures identify pan-cancer classes of tumors beyond tissue of origin. Sci Rep. 10: 8341. doi:10.1038/s41598-020-65119-5.
     2. 	Shen H., Huang J.Z. 2008. Sparse principal component analysis via regularized low rank matrix approximation. J Multivar Anal. Academic Press. 99: 1015–1034. doi:10.1016/J.JMVA.2007.06.007.
     3. 	Zou H, Hastie T. 2005. Regularization and variable selection via the Elastic Net. J R Stat Soc Ser B. 67: 301–320. doi:10.1.1.124.4696.
 URL: https://github.com/agugonrey/MOSS
