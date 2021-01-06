@@ -1,8 +1,8 @@
 Package: MOSS
 Type: Package
-Title: MOSS: Multi-Omic Integration via Sparse Singular Value Decomposition
+Title: Multi-Omic Integration via Sparse Singular Value Decomposition
 Version: 0.1.0
-Date: 2020-01-05
+Date: 2020-01-06
 Author: Agustin Gonzalez-Reymundez, Alexander Grueneberg, Ana I. Vazquez.
 Maintainer: Agustin Gonzalez-Reymundez <agugonrey@gmail.com>
 Description: High dimensionality, noise and heterogeneity among samples and omic features challenge the rational integration of molecular information. Here we present an implementation of sparse general SVD to deal with these limitations, by:
@@ -11,6 +11,11 @@ Description: High dimensionality, noise and heterogeneity among samples and omic
     c. Using Elastic Net type of shrinkage, to balance between ridge and lasso types of penalty and allow the selection of groups of subjects or features potentially correlated.
     d. Allowing both linear and non-linear projections (via t-Stochastic Neighbor Embedding) of the omic data to detect undesired sources of variation (e.g. batch and other artifact effects), and reveal cluster in very convoluted data.
     e. Using the flexible framework of sparse SVD to extend the above ideas into unsupervised and supervised problems.
+    References: 
+    1. 	Gonzalez-Reymúndez A., Vazquez A.I. 2020. Multi-omic signatures identify pan-cancer classes of tumors beyond tissue of origin. Sci Rep. 10: 8341. doi:10.1038/s41598-020-65119-5.
+    2. 	Shen H., Huang J.Z. 2008. Sparse principal component analysis via regularized low rank matrix approximation. J Multivar Anal. Academic Press. 99: 1015–1034. doi:10.1016/J.JMVA.2007.06.007.
+    3. 	Zou H, Hastie T. 2005. Regularization and variable selection via the Elastic Net. J R Stat Soc Ser B. 67: 301–320. doi:10.1.1.124.4696.
+URL: https://github.com/agugonrey/MOSS
 Imports:
     stats,
     cluster,
