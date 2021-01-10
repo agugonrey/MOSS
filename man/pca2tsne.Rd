@@ -7,38 +7,66 @@
 pca2tsne(Z, perp = 50, n.samples = 1, n.iter = 1000)
 }
 \arguments{
-\item{Z}{A matrix with axes of variation (typically PCs) as columns and subjects as rows.}
+\item{Z}{A matrix with axes of variation (typically PCs) as columns
+and subjects as rows.}
 
 \item{perp}{Perplexity value. Defaults to 50.}
 
-\item{n.samples}{Number of times the algorithm from different random initial conditions. Defaults to 1.}
+\item{n.samples}{Number of times the algorithm from different random
+initial conditions. Defaults to 1.}
 
-\item{n.iter}{Number of iterations for each run of the algorithm. Defaults to 1000.}
+\item{n.iter}{Number of iterations for each run of the algorithm.
+Defaults to 1000.}
 }
 \value{
-Returns the tSNE (output of function 'Rtsne::Rtsne') with the smallest error across the 'n.samples' random starts.
+Returns the tSNE (output of function 'Rtsne::Rtsne') with
+the smallest error across the 'n.samples' random starts.
 }
 \description{
-This function is called by moss whenever 'moss(tSNE=TRUE)'. However, it can be used on any generic data matrix. The function uses the Barnes-Hut tSNE algorithm from Rtsne package, and uses an iterative procedure to select a tSNE map minimizing the projection cost across several random initial conditions.
-The function is inspired by the iterative procedure discussed in Taskesen et al. 2016 and code originally provided with the publication.
+This function is called by moss whenever 'moss(tSNE=TRUE)' to project
+latent factors onto two dimensions via t-stochastic neighbor embedding
+ (tSNE)
+}
+\details{
+However, it can be used on any generic data matrix.
+The function uses the Barnes-Hut tSNE algorithm from Rtsne package,
+ and uses an iterative procedure to select a tSNE map minimizing the
+  projection cost across several random initial conditions.
+The function is inspired by the iterative procedure discussed in
+ Taskesen et al. 2016 and code originally provided with the publication.
 }
 \examples{
 \dontrun{
 library("MOSS")
-sim_blocks <-simulate_data()$sim_blocks
+sim_blocks <- simulate_data()$sim_blocks
 
-#Example of pca2tsne usage.
-Z <- pca2tsne(sim_blocks$`Block 3`,perp=50,n.samples=1,n.iter=1e3)$Y
-plot(Z,xlab="x_tSNE(X)",ylab="y_tSNE(X)")
+# Example of pca2tsne usage.
+Z <- pca2tsne(sim_blocks$`Block 3`, perp = 50, n.samples = 1, n.iter = 1e3)$Y
+plot(Z, xlab = "x_tSNE(X)", ylab = "y_tSNE(X)")
 
-#Example of use within moss.
+# Example of use within moss.
 moss(sim_blocks[-4],
-     tSNE=list(perp=50,
-               n.samples=1,
-               n.iter=1e3),
-               plot=TRUE)$tSNE_plot
+  tSNE = list(
+    perp = 50,
+    n.samples = 1,
+    n.iter = 1e3
+  ),
+  plot = TRUE
+)$tSNE_plot
 }
 }
 \references{
-Taskesen, E., Huisman, S. M. H., Mahfouz, A., et al. Pan-cancer subtyping in a 2D-map shows substructures that are driven by specific combinations of molecular characteristics. Sci. Rep. 6, 24949 (2016).
+\itemize{
+\item van der Maaten L, Hinton G. Visualizing Data using t-SNE.
+ J Mach Learn Res. 2008;9: 2579–2605
+ \item Krijthe JH. Rtsne: T-Distributed Stochastic Neighbor
+ Embedding using a Barnes-Hut Implementation. 2015
+ \item Taskesen, Erdogan, Sjoerd M. H. Huisman, Ahmed Mahfouz,
+    Jesse H. Krijthe, Jeroen de Ridder, Anja van de Stolpe,
+    Erik van den Akker, Wim Verheagh, and Marcel J. T. Reinders. 2016.
+     Pan-Cancer Subtyping in a 2D-Map Shows Substructures
+     That Are Driven by Specific Combinations of Molecular
+      Characteristics. Scientific Reports 6 (1):24949.
+
+ }
 }

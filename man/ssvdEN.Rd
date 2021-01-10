@@ -23,138 +23,227 @@ ssvdEN(
 )
 }
 \arguments{
-\item{O}{Numeric matrix of n subjects (rows) and p features (columns). It can be a Filebacked Big Matrix.}
+\item{O}{Numeric matrix of n subjects (rows) and p features (columns).
+It can be a File-backed Big Matrix.}
 
 \item{n.PC}{Number of desired principal axes. Numeric. Defaults to 1.}
 
-\item{dg.spar.features}{Degree of sparsity at the features level. Numeric. Defaults to NULL.}
+\item{dg.spar.features}{Degree of sparsity at the features level.
+Numeric. Defaults to NULL.}
 
-\item{dg.spar.subjects}{Degree of sparsity at the subjects level. Numeric. Deafults to NULL.}
+\item{dg.spar.subjects}{Degree of sparsity at the subjects level.
+Numeric. Defaults to NULL.}
 
-\item{maxit}{Maximum number of iterations for the sparse SVD algorithm. Numeric. Defaults to 500.}
+\item{maxit}{Maximum number of iterations for the sparse SVD algorithm.
+Numeric. Defaults to 500.}
 
-\item{tol}{Convergence tolerance for the sparse SVD algorithm. Numeric. Defaults to 0.001.}
+\item{tol}{Convergence tolerance for the sparse SVD algorithm.
+Numeric. Defaults to 0.001.}
 
 \item{scale.arg}{Should O be scaled? Logical. Defaults to TRUE.}
 
 \item{center.arg}{Should O be centered? Logical. Defaults to TRUE.}
 
-\item{approx.arg}{Should we use standard SVD or random approximations? Defaults to FALSE. If TRUE & is(O,'matrix') == TRUE, irlba is called. If TRUE & is(O, "FBM") == TRUE, big_randomSVD is called.}
+\item{approx.arg}{Should we use standard SVD or random approximations?
+Defaults to FALSE. If TRUE & is(O,'matrix') == TRUE, irlba is called.
+ If TRUE & is(O, "FBM") == TRUE, big_randomSVD is called.}
 
-\item{alpha.f}{Elastic net mixture parameter at the features level. Measures the compromise between lasso (alpha = 1) and ridge (alpha = 0) types of sparsity. Numeric. Deafaults to 1.}
+\item{alpha.f}{Elastic net mixture parameter at the features level.
+Measures the compromise between lasso (alpha = 1) and
+ridge (alpha = 0) types of sparsity. Numeric. Defaults to 1.}
 
-\item{alpha.s}{Elastic net mixture parameter at the subjects level. Defaults to alpha.s = 1.}
+\item{alpha.s}{Elastic net mixture parameter at the subjects level.
+Defaults to alpha.s = 1.}
 
 \item{svd.0}{List containing an initial SVD. Defaults to NULL.}
 
-\item{s.values}{Should the singular values be calculated? Logical. Defaults to TRUE.}
+\item{s.values}{Should the singular values be calculated? Logical.
+Defaults to TRUE.}
 
-\item{ncores}{Number of cores used by big_randomSVD. Default does not use parallelism. Ignored when class(O)!=FBM.}
+\item{ncores}{Number of cores used by big_randomSVD.
+Default does not use parallelism. Ignored when class(O)!=FBM.}
 
-\item{exact.dg}{Should we compute exact degrees of sparsity? Logical. Defaults to FALSE. Only relevant When alpha.s or alpha.f are in the (0,1) interval and exact.dg = TRUE.}
+\item{exact.dg}{Should we compute exact degrees of sparsity? Logical.
+Defaults to FALSE. Only relevant When alpha.s or alpha.f are
+in the (0,1) interval and exact.dg = TRUE.}
 }
 \value{
 A list with the results of the (sparse) SVD, containing:
 \itemize{
 \item u: Matrix with left eigenvectors.
 \item v: Matrix with right eigenvectors.
-\item d: Matrix with singular values. 
+\item d: Matrix with singular values.
 }
 }
 \description{
-This function performs sparse SVD at subjects' level, features, or both, via Elastic Net types of penalties.
-It uses a penalized SVD, or PCA, that imposes sparsity in both, left and right, singular vectors.
-For one PC (rank 1 case), the algorithm finds vectors u, w that minimize:
-   ||x - u w'||_F^2 + lambda_w (alpha_w||w||_1 + (1 - alpha_w)||w||_F^2) + lambda_u (alpha||u||_1 + (1 - alpha_u)||u||_F^2)
-such that ||u|| = 1. The right Eigen vector is obtained from v = w / ||w|| and the corresponding Eigen value = u^T x v.
-The penalties lambda_u and lambda_w are mapped from specified desired degree of sparsity (dg.spar.features & dg.spar.subjects).
+This function performs sparse singular value decomposition (SVD)
+at subjects' level, features,
+or both, via Elastic Net types of penalties.
+It uses a penalized SVD, or principal components analysis (PCA),
+ that imposes sparsity in both,
+left and right, singular vectors.
+For one PC (rank 1 case), the algorithm finds vectors u,
+ w that minimize:
+ ||x - u w'||_F^2 +
+ lambda_w (alpha_w||w||_1 +
+ (1 - alpha_w)||w||_F^2) +
+ lambda_u (alpha||u||_1 + (1 - alpha_u)||u||_F^2)
+such that ||u|| = 1.
+The right Eigen vector is obtained from v = w / ||w|| and the
+ corresponding Eigen value = u^T x v.
+The penalties lambda_u and lambda_w are mapped from
+specified desired degree of sparsity
+(dg.spar.features & dg.spar.subjects).
 }
 \details{
-The function allows the use of the base svd function for relatively small problems. For larger problems, functions for fast-partial SVD (irlba and big_randomSVD, from irlba and bigstatsr packages)
-are used.
+The function allows the use of the base svd function
+ for relatively small
+problems.
+For larger problems, functions for fast-partial SVD
+(irlba and big_randomSVD, from irlba and bigstatsr packages) are used.
 }
 \note{
-When elastic net is used ('alpha.s' or 'alpha.f' in the (0,1) interval), the resulting number of non-zero subjects or features
-is larger than the 'dg.spar.subjects' or 'dg.spar.features' values. This allows to rapidly increase the number of non-zero elements when tuning the degrees of sparsity with 
-function ssvdEN_sol_path. In order to get exact values for the degrees of sparsity at subjects or features levels, the user needs to 
-set the value of 'exact.dg' parameter from 'FALSE' (the default) to 'TRUE'.
+When elastic net is used ('alpha.s' or 'alpha.f' in the (0,1)
+interval), the resulting number of non-zero subjects or features
+is larger than the 'dg.spar.subjects' or 'dg.spar.features' values.
+ This allows to rapidly increase the number of non-zero elements when
+  tuning the degrees of sparsity with
+function ssvdEN_sol_path. In order to get exact values for the degrees
+ of sparsity at subjects or features levels, the user needs to
+set the value of 'exact.dg' parameter from 'FALSE' (the default)
+to 'TRUE'.
 }
 \examples{
 library("MOSS")
 
-#Extracting simulated omic blocks.
+# Extracting simulated omic blocks.
 sim_blocks <- simulate_data()$sim_blocks
 
 X <- sim_blocks$`Block 3`
 
-#Equal to svd solution: exact singular vectors and values.
-out <- ssvdEN(X,approx.arg = FALSE)
-
-\dontrun{
-#Uses irlba to get approximated singular vectors and values.
+# Equal to svd solution: exact singular vectors and values.
+out <- ssvdEN(X, approx.arg = FALSE)
+\donttest{
+# Uses irlba to get approximated singular vectors and values.
 library(irlba)
 out <- ssvdEN(X, approx.arg = TRUE)
-#Uses bigstatsr to get approximated singular vectors and values of a Filebacked Big Matrix.
+# Uses bigstatsr to get approximated singular vectors and values
+# of a Filebacked Big Matrix.
 library(bigstatsr)
 out <- ssvdEN(as_FBM(X), approx.arg = TRUE)
 
-#Sampling a number of subjects and features for a fix sparsity degree.
+# Sampling a number of subjects and features for a fix sparsity degree.
 s.u <- sample(1:nrow(X), 1)
 s.v <- sample(1:ncol(X), 1)
 
-#Lasso penalties.
-all.equal(sum(ssvdEN(X,dg.spar.features = s.v)$v != 0),s.v)
-all.equal(unique(colSums(ssvdEN(X,dg.spar.features = s.v,n.PC=5)$v != 0)), s.v)
+# Lasso penalties.
+all.equal(sum(ssvdEN(X, dg.spar.features = s.v)$v != 0), s.v)
+all.equal(
+  unique(colSums(ssvdEN(X, dg.spar.features = s.v, n.PC = 5)$v
+  != 0)),
+  s.v
+)
 
-all.equal(sum(ssvdEN(X,dg.spar.subjects  = s.u)$u != 0),s.u)
-all.equal(unique(colSums(ssvdEN(X,dg.spar.subjects = s.u,n.PC=5)$u != 0)), s.u)
+all.equal(sum(ssvdEN(X, dg.spar.subjects = s.u)$u != 0), s.u)
+all.equal(
+  unique(colSums(ssvdEN(X, dg.spar.subjects = s.u, n.PC = 5)$u
+  != 0)),
+  s.u
+)
 
-out <- ssvdEN(X,dg.spar.features = s.v,dg.spar.subjects = s.u)
+out <- ssvdEN(X, dg.spar.features = s.v, dg.spar.subjects = s.u)
 all.equal(sum(out$u != 0), s.u)
 all.equal(sum(out$v != 0), s.v)
 
-out <- ssvdEN(X,dg.spar.features = s.v,dg.spar.subjects = s.u,n.PC=10)
+out <- ssvdEN(X,
+  dg.spar.features = s.v, dg.spar.subjects = s.u,
+  n.PC = 10
+)
 all.equal(unique(colSums(out$u != 0)), s.u)
 all.equal(unique(colSums(out$v != 0)), s.v)
 
-#Ridge penalties.
-all.equal(sum(ssvdEN(X,dg.spar.features = s.v,alpha.f = 0)$v != 0),ncol(X))
-all.equal(unique(colSums(ssvdEN(X,dg.spar.features = s.v, n.PC=5,alpha.f = 0)$v != 0)), 
-ncol(X))
+# Ridge penalties.
+all.equal(
+  sum(ssvdEN(X, dg.spar.features = s.v, alpha.f = 0)$v != 0),
+  ncol(X)
+)
+all.equal(
+  unique(colSums(ssvdEN(X,
+    dg.spar.features = s.v, n.PC = 5,
+    alpha.f = 0
+  )$v != 0)),
+  ncol(X)
+)
 
-all.equal(sum(ssvdEN(X,dg.spar.subjects = s.u,alpha.s = 0)$u != 0),nrow(X))
-all.equal(unique(colSums(ssvdEN(X,dg.spar.subjects = s.u, n.PC=5,alpha.s = 0)$u != 0)), 
-nrow(X))
+all.equal(
+  sum(ssvdEN(X, dg.spar.subjects = s.u, alpha.s = 0)$u != 0),
+  nrow(X)
+)
+all.equal(
+  unique(colSums(ssvdEN(X,
+    dg.spar.subjects = s.u, n.PC = 5,
+    alpha.s = 0
+  )$u != 0)),
+  nrow(X)
+)
 
-out <- ssvdEN(X,dg.spar.features = s.v,dg.spar.subjects = s.u,alpha.f = 0,alpha.s = 0)
+out <- ssvdEN(X,
+  dg.spar.features = s.v, dg.spar.subjects = s.u,
+  alpha.f = 0, alpha.s = 0
+)
 all.equal(sum(out$u != 0), nrow(X))
 all.equal(sum(out$v != 0), ncol(X))
 
-out <- ssvdEN(X,dg.spar.features = s.v,dg.spar.subjects = s.u,n.PC=10,alpha.f = 0,
-alpha.s = 0)
+out <- ssvdEN(X,
+  dg.spar.features = s.v, dg.spar.subjects = s.u,
+  n.PC = 10, alpha.f = 0,
+  alpha.s = 0
+)
 all.equal(unique(colSums(out$u != 0)), nrow(X))
 all.equal(unique(colSums(out$v != 0)), ncol(X))
 
-#Elastic Net penalties.
-sum(ssvdEN(X,dg.spar.features = s.v,alpha.f = 0.5)$v != 0) >= s.v
-all(unique(colSums(ssvdEN(X,dg.spar.features = s.v, n.PC=5,alpha.f = 0.5)$v != 0)) >= s.v)
+# Elastic Net penalties.
+sum(ssvdEN(X, dg.spar.features = s.v, alpha.f = 0.5)$v != 0) >= s.v
+all(unique(colSums(ssvdEN(X,
+  dg.spar.features = s.v, n.PC = 5,
+  alpha.f = 0.5
+)$v != 0)) >= s.v)
 
-sum(ssvdEN(X,dg.spar.subjects = s.u,alpha.s = 0.5)$u != 0) >= s.u
-all(unique(colSums(ssvdEN(X,dg.spar.subjects = s.u, n.PC=5,alpha.s = 0.5)$u != 0)) >= s.u)
+sum(ssvdEN(X, dg.spar.subjects = s.u, alpha.s = 0.5)$u != 0) >= s.u
+all(unique(colSums(ssvdEN(X,
+  dg.spar.subjects = s.u, n.PC = 5,
+  alpha.s = 0.5
+)$u != 0)) >= s.u)
 
-#Elastic Net penalties with exact degrees of sparsity.
-sum(ssvdEN(X,dg.spar.features = s.v,alpha.f = 0.5,exact.dg=TRUE)$v != 0) == s.v
-all(unique(colSums(ssvdEN(X,dg.spar.features = s.v, n.PC=5,
-alpha.f = 0.5,exact.dg=TRUE)$v != 0)) == s.v)
+# Elastic Net penalties with exact degrees of sparsity.
+sum(ssvdEN(X,
+  dg.spar.features = s.v, alpha.f = 0.5,
+  exact.dg = TRUE
+)$v != 0) == s.v
+all(unique(colSums(ssvdEN(X,
+  dg.spar.features = s.v, n.PC = 5,
+  alpha.f = 0.5, exact.dg = TRUE
+)$v != 0)) == s.v)
 
-sum(ssvdEN(X,dg.spar.subjects = s.u,alpha.s = 0.5,exact.dg=TRUE)$u != 0) == s.u
-all(unique(colSums(ssvdEN(X,dg.spar.subjects = s.u, n.PC=5,
-alpha.s = 0.5,exact.dg=TRUE)$u != 0)) == s.u)
+sum(ssvdEN(X,
+  dg.spar.subjects = s.u, alpha.s = 0.5,
+  exact.dg = TRUE
+)$u != 0) == s.u
+all(unique(colSums(ssvdEN(X,
+  dg.spar.subjects = s.u, n.PC = 5,
+  alpha.s = 0.5, exact.dg = TRUE
+)$u != 0)) == s.u)
 }
 }
 \references{
 \itemize{
-   \item Shen, Haipeng, and Jianhua Z. Huang. 2008. Sparse Principal Component Analysis via Regularized Low Rank Matrix Approximation. Journal of Multivariate Analysis 99 (6). Academic Press:1015_34.
-   \item Baglama, Jim, Lothar Reichel, and B W Lewis. 2018. Irlba: Fast Truncated Singular Value Decomposition and Principal Components Analysis for Large Dense and Sparse Matrices.
+   \item Shen, Haipeng, and Jianhua Z. Huang. 2008.
+   Sparse Principal Component Analysis via Regularized Low
+   Rank Matrix Approximation.
+   Journal of Multivariate Analysis 99 (6).
+    Academic Press:1015_34.
+   \item Baglama, Jim, Lothar Reichel, and B W Lewis. 2018.
+   Irlba: Fast Truncated Singular Value Decomposition and
+   Principal Components Analysis for Large Dense and Sparse Matrices.
  }
 }

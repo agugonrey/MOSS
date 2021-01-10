@@ -8,7 +8,7 @@ ssvdEN_sol_path(
   O,
   center = TRUE,
   scale = TRUE,
-  dg.grid.right = 1:(ncol(O) - 1),
+  dg.grid.right = seq_len(ncol(O)) - 1,
   dg.grid.left = NULL,
   n.PC = 1,
   svd.0 = NULL,
@@ -26,91 +26,134 @@ ssvdEN_sol_path(
 )
 }
 \arguments{
-\item{O}{Numeric matrix of n subjects (rows) and p features (columns). Only objects supported are 'matrix' and 'FBM'.}
+\item{O}{Numeric matrix of n subjects (rows) and p features (columns).
+Only objects supported are 'matrix' and 'FBM'.}
 
 \item{center}{Should we center? Logical. Defaults to TRUE.}
 
 \item{scale}{Should we scale? Logical. Defaults to TRUE.}
 
-\item{dg.grid.right}{Grid with degrees of sparsity at the features level. Numeric. Default is the entire solution path for features (i.e. 1 : (ncol(O) - 1)).}
+\item{dg.grid.right}{Grid with degrees of sparsity at the features level.
+Numeric. Default is the entire solution path for features
+(i.e. 1 : (ncol(O) - 1)).}
 
-\item{dg.grid.left}{Grid with degrees of sparsity at the subjects level. Numeric. Deafults to dg.grid.left = nrow(O).}
+\item{dg.grid.left}{Grid with degrees of sparsity at the subjects level.
+Numeric. Defaults to dg.grid.left = nrow(O).}
 
 \item{n.PC}{Number of desired principal axes. Numeric. Defaults to 1.}
 
-\item{svd.0}{Initial SVD (i.e. least squares solution). Defaults to NULL.}
+\item{svd.0}{Initial SVD (i.e. least squares solution).
+Defaults to NULL.}
 
-\item{alpha.f}{Elastic net mixture parameter at the features level. Measures the compromise between lasso (alpha = 1) and ridge (alpha = 0) types of sparsity. Numeric. Deafaults to 1.}
+\item{alpha.f}{Elastic net mixture parameter at the features level.
+Measures the compromise between lasso (alpha = 1) and
+ ridge (alpha = 0) types of sparsity. Numeric. Defaults to 1.}
 
-\item{alpha.s}{Elastic net mixture parameter at the subjects level. Defaults to alpha.s = 1.}
+\item{alpha.s}{Elastic net mixture parameter at the subjects level.
+Defaults to alpha.s = 1.}
 
 \item{maxit}{Maximum number of iterations. Defaults to 500.}
 
-\item{tol}{Convergenge is determined when ||U_j - U_{j-1}||_F < tol, where U_j is the matrix of estimated left regularized singular vectors at iteration j.}
+\item{tol}{Convergence is determined when ||U_j - U_{j-1}||_F < tol,
+where U_j is the matrix of estimated left regularized singular
+vectors at iteration j.}
 
-\item{approx}{Should we use standard SVD or random approximations? Defaults to FALSE. If TRUE & is(O,'matrix') == TRUE, irlba is called. If TRUE & is(O, "FBM") == TRUE, big_randomSVD is called.}
+\item{approx}{Should we use standard SVD or random approximations?
+Defaults to FALSE. If TRUE & is(O,'matrix') == TRUE, irlba is called.
+ If TRUE & is(O, "FBM") == TRUE, big_randomSVD is called.}
 
 \item{plot}{Should we plot the solution path? Logical. Defaults to FALSE}
 
-\item{ncores}{Number of cores used by big_randomSVD. Default does not use parallelism. Ignored when is(O, "FBM") == TRUE.}
+\item{ncores}{Number of cores used by big_randomSVD.
+Default does not use parallelism. Ignored when is(O, "FBM") == TRUE.}
 
 \item{verbose}{Should we print messages?. Logical. Defaults to TRUE.}
 
-\item{left.lab}{Label for the subjects level. Character. Defaults to 'subjects'.}
+\item{left.lab}{Label for the subjects level. Character.
+Defaults to 'subjects'.}
 
-\item{right.lab}{Label for the features level. Character. Defaults to 'features'.}
+\item{right.lab}{Label for the features level. Character.
+Defaults to 'features'.}
 
-\item{exact.dg}{Should we compute exact degrees of sparsity? Logical. Defaults to FALSE. Only relevant When alpha.s or alpha.f are in the (0,1) interval and exact.dg = TRUE.}
+\item{exact.dg}{Should we compute exact degrees of sparsity? Logical.
+Defaults to FALSE. Only relevant When alpha.s or alpha.f are in the (0,1)
+ interval and exact.dg = TRUE.}
 }
 \value{
 \itemize{
-A list with the results of the (sparse) SVD and (if argument 'plot'=TRUE) the corresponding graphical displays.
-\item SVD: a list with the results of the (sparse) SVD, containing: 
+A list with the results of the (sparse) SVD and (if argument 'plot'=TRUE)
+ the corresponding graphical displays.
+\item SVD: a list with the results of the (sparse) SVD, containing:
  \itemize{
    \item u: Matrix with left eigenvectors.
    \item v: Matrix with right eigenvectors.
    \item d: Matrix with singular values.
-   \item opt.dg.right: Selected degrees of sparsity for right eigenvectors. 
-   \item opt.dg.left: Selected degrees of sparsity for left eigenvectors. 
+   \item opt.dg.right: Selected degrees of sparsity for right eigenvectors.
+   \item opt.dg.left: Selected degrees of sparsity for left eigenvectors.
  }
 \item plot: A ggplot object with the graphical display of solution paths.
 }
 }
 \description{
-This function allows to explore values on the solution path of the sparse SVD problem. The goal of this is to select the degree of sparsity of subjects, features, or both subjects/features.
-The function performs a penalized SVD that imposes sparsity/smoothing in both left and right singular vectors.
-The penalties at both levels are Elastic Net-like, and the trade off between ridge and Lasso like penalties is controled
-by two 'alpha' parameters. The proportion of variance explained is the criteria used to choose the optimal degrees of sparsity.
+This function allows to explore values on the solution path of the
+sparse singular value decomposition (SVD) problem.
+The goal of this is to select the degree of sparsity of subjects,
+features, or both subjects/features.
+The function performs a penalized SVD that imposes sparsity/smoothing
+in both left and right singular vectors.
+The penalties at both levels are Elastic Net-like,
+and the trade-off between ridge and Lasso like penalties is controlled
+by two 'alpha' parameters. The proportion of variance explained is
+ the criteria used to choose the optimal degrees of sparsity.
 }
 \details{
-The function returns the degree of sparsity for which the change in PEV is the steepest or most abrupt. This heuristic relaxes the need of tuning parameteres on a testing set.
-Nevertheless, our algorithm can be much more liberal than, say, cross-validation. As a consecuence, we might compromise statistical power. See the 'Examples' below.
+The function returns the degree of sparsity for which the change in PEV
+is the steepest or most abrupt. This heuristic relaxes the need of
+tuning parameters on a testing set.
+Nevertheless, our algorithm can be much more liberal than, say,
+cross-validation. As a consequence, we might compromise statistical power.
+ See the 'Examples' below.
 
 For one PC (rank 1 case), the algorithm finds vectors u, w that minimize:
-   ||x - u w'||_F^2 + lambda_w (alpha_w||w||_1 + (1 - alpha_w)||w||_F^2) + lambda_u (alpha||u||_1 + (1 - alpha_u)||u||_F^2)
-such that ||u|| = 1. The right Eigen vector is obtained from v = w / ||w|| and the corresponding Eigen value = u^T x v.
-The penalties lambda_u and lambda_w are mapped from specified desired degrees of sparsity (dg.spar.features & dg.spar.subjects).
+   ||x - u w'||_F^2 + lambda_w (alpha_w||w||_1 + (1 - alpha_w)||w||_F^2)
+   +
+    lambda_u (alpha||u||_1 + (1 - alpha_u)||u||_F^2)
+such that ||u|| = 1. The right Eigen vector is obtained
+from v = w / ||w|| and the corresponding Eigen value = u^T x v.
+The penalties lambda_u and lambda_w are mapped from specified
+desired degrees of sparsity (dg.spar.features & dg.spar.subjects).
 }
 \note{
-Although the degree of sparsity maps onto number of features/subjects for Lasso, the user needs to be aware that this conceptual correspondence
-is lost for full EN (alpha belonging to (0, 1); e.g. the number of features selected with alpha < 1 will be eventually larger than the optimal degree of sparsity).
-This allows to rapidly increase the number of non-zero elements when tuning the degrees of sparsity. 
-In order to get exact values for the degrees of sparsity at subjects or features levels, the user needs to 
-set the value of 'exact.dg' parameter from 'FALSE' (the default) to 'TRUE'.
+Although the degree of sparsity maps onto number of
+features/subjects for Lasso, the user needs to be aware that
+this conceptual correspondence
+is lost for full EN (alpha belonging to (0, 1);
+e.g. the number of features selected with alpha < 1
+will be eventually larger than the optimal degree of sparsity).
+This allows to rapidly increase the number of non-zero elements
+when tuning the degrees of sparsity.
+In order to get exact values for the degrees of sparsity at subjects or
+ features levels, the user needs to
+set the value of 'exact.dg' parameter from 'FALSE' (the default) to
+'TRUE'.
 }
 \examples{
 library("MOSS")
 
-#Extracting simulated omic blocks.
+# Extracting simulated omic blocks.
 sim_blocks <- simulate_data()$sim_blocks
 X <- sim_blocks$`Block 3`
 
-#Tuning sparsity degree for features (increments of 20 units).
-out <- ssvdEN_sol_path(X,dg.grid.right = seq(1,1000,by=20))
+# Tuning sparsity degree for features (increments of 20 units).
+out <- ssvdEN_sol_path(X, dg.grid.right = seq(1, 1000, by = 20))
 }
 \references{
 \itemize{
-   \item Shen, Haipeng, and Jianhua Z. Huang. 2008. Sparse Principal Component Analysis via Regularized Low Rank Matrix Approximation. Journal of Multivariate Analysis 99 (6). 
-   \item Baglama, Jim, Lothar Reichel, and B W Lewis. 2018. Irlba: Fast Truncated Singular Value Decomposition and Principal Components Analysis for Large Dense and Sparse Matrices.
+   \item Shen, Haipeng, and Jianhua Z. Huang. 2008. Sparse Principal
+   Component Analysis via Regularized Low Rank Matrix Approximation.
+   Journal of Multivariate Analysis 99 (6).
+   \item Baglama, Jim, Lothar Reichel, and B W Lewis. 2018.
+   Irlba: Fast Truncated Singular Value Decomposition and Principal
+   Components Analysis for Large Dense and Sparse Matrices.
  }
 }

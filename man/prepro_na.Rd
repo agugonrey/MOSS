@@ -13,7 +13,8 @@ prepro_na(X)
 Returns total number of missing values in X.
 }
 \description{
-This function is called by moss to count the number of missing values within the (extended) matrices.
+This function is called by moss to count the number of missing values
+ within the (extended) matrices.
 }
 \details{
 Ment for objects of class 'matrix', 'FBM', or 'array'.

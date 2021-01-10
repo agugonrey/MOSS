@@ -22,156 +22,280 @@ moss(
   cluster = FALSE,
   clus.lab = NULL,
   tSNE = FALSE,
-  axes.pos = 1:K.Y,
+  axes.pos = seq_len(K.Y),
   approx.arg = FALSE,
   exact.dg = FALSE,
   use.fbm = FALSE
 )
 }
 \arguments{
-\item{data.blocks}{List containing omic blocks of class 'matrix' or 'FBM'. In each block, rows represent subjects and columns features. IMPORTANT: omic blocks have to be aligned by rows.}
+\item{data.blocks}{List containing omic blocks of class 'matrix' or
+'FBM'. In
+each block, rows represent subjects and columns features.
+ IMPORTANT: omic blocks
+have to be aligned by rows.}
 
-\item{scale.arg}{Should the omic blocks be centered and scaled? Logical. Defaults to TRUE.}
+\item{scale.arg}{Should the omic blocks be centered and
+scaled? Logical. Defaults to TRUE.}
 
-\item{norm.arg}{Should omic blocks be normalized? Logical. Defaults to TRUE.}
+\item{norm.arg}{Should omic blocks be
+normalized? Logical. Defaults to TRUE.}
 
-\item{method}{Multivariate method. Character. Defaults to 'pca'. Possible options are pca, mbpca, pca-lda, mbpca-lda, pls, mbpls, pls-lda, mbpls-lda, lrr, mblrr, lrr-lda, mblrr-lda.}
+\item{method}{Multivariate method. Character.
+Defaults to 'pca'. Possible options are pca, mbpca, pca-lda,
+mbpca-lda, pls,
+mbpls, pls-lda, mbpls-lda, lrr, mblrr, lrr-lda, mblrr-lda.}
 
-\item{resp.block}{What block should be used as response? Integer. Only used when the specified method is supervised.}
+\item{resp.block}{What block should be used as response? Integer.
+Only used when the specified
+method is supervised.}
 
-\item{K.X}{Number of principal components for predictors. Integer. Defaults to 5.}
+\item{K.X}{Number of principal components for predictors.
+Integer. Defaults to 5.}
 
-\item{K.Y}{Number of responses PC index when method is supervised. Defaults to K.X.}
+\item{K.Y}{Number of responses PC index when method is
+supervised. Defaults to K.X.}
 
-\item{verbose}{Should we print messages? Logical. Defaults to TRUE.}
+\item{verbose}{Should we print messages? Logical.
+Defaults to TRUE.}
 
-\item{ncores}{Number of cores used for sSVD. Only relevant when at least one omic block is a FBM. Defaults to 1.}
+\item{ncores}{Number of cores used for sSVD. Only relevant
+when at least one omic block is a FBM. Defaults to 1.}
 
-\item{nu.u}{A grid with increasing integers representing degrees of sparsity for left-eigenvectors. Defaults to NULL.}
+\item{nu.u}{A grid with
+increasing integers representing degrees of sparsity for
+left Eigenvectors.
+Defaults to NULL.}
 
-\item{nu.v}{Same but for right eigen vectors. Defaults to NULL.}
+\item{nu.v}{Same but for right Eigenvectors. Defaults to NULL.}
 
-\item{alpha.u}{Elastic Net parameter for left eigenvectors. Numeric between 0 and 1. Defaults to 1.}
+\item{alpha.u}{Elastic Net parameter for left Eigenvectors.
+Numeric between 0
+and 1. Defaults to 1.}
 
-\item{alpha.v}{Elastic Net parameter for right eigenvectors. Numeric between 0 and 1. Defaults to 1.}
+\item{alpha.v}{Elastic Net parameter for right
+Eigenvectors. Numeric between 0 and 1. Defaults to 1.}
 
-\item{plot}{Should results be plotted? Logical. Defaults to FALSE.}
+\item{plot}{Should results be plotted?
+Logical. Defaults to FALSE.}
 
-\item{cluster}{Arguments passed to the function tsne2clus as a list. Defaults to FALSE. If cluster=TRUE, default parameters are used (eps_range=c(0,4), eps_res=100).}
+\item{cluster}{Arguments
+passed to the function tsne2clus as a list. Defaults to FALSE.
+ If cluster=TRUE,
+default parameters are used (eps_range=c(0,4), eps_res=100).}
 
-\item{clus.lab}{A vector of same length than number of subjects with labels used to visualize clusters. Factor. Defaults to NULL. 
-When sparsity is imposed on the left eigenvectors, the association between non-zero loadings and labels' groups is shown by a Chi-2 statistics for each pc. When sparsity is not imposed, the association between labels and PC is addressed by a Kruskal-Wallis statistics.}
+\item{clus.lab}{A
+vector of same length than number of subjects with labels used to
+visualize clusters. Factor.
+Defaults to NULL.
+ When sparsity is imposed on the left
+Eigenvectors, the association between non-zero loadings and
+ labels' groups is shown by a Chi-2 statistics for each pc.
+ When sparsity is not imposed, the association between
+ labels and PC
+  is addressed by a Kruskal-Wallis statistics.}
 
-\item{tSNE}{Arguments passed to the function pca2tsne as a list. Defaults to FALSE. If tSNE=T, default parameters are used (perp=50,n.samples=1,n.iter=1e3).}
+\item{tSNE}{Arguments passed to the function pca2tsne as a list.
+Defaults to
+FALSE. If tSNE=T, default parameters are used
+(perp=50,n.samples=1,n.iter=1e3).}
 
-\item{axes.pos}{PC index used for tSNE. Defaults to 1 : K.Y. Used only when tSNE is different than NULL.}
+\item{axes.pos}{PC index used for tSNE.
+Defaults to 1 : K.Y. Used only when tSNE
+is different than NULL.}
 
-\item{approx.arg}{Should we use standard SVD or random approximations? Defaults to FALSE. If TRUE and at least one block is of class 'matrix', irlba is called. If TRUE & is(O,'FBM')==TRUE, big_randomSVD is called.}
+\item{approx.arg}{Should we use standard SVD or
+random approximations? Defaults to FALSE.
+If TRUE and at least one block is of
+class 'matrix', irlba is called. If TRUE & is(O,'FBM')==TRUE,
+big_randomSVD is called.}
 
-\item{exact.dg}{Should we compute exact degrees of sparsity? Logical. Defaults to FALSE. Only relevant When alpha.s or alpha.f are in the (0,1) interval and exact.dg = TRUE.}
+\item{exact.dg}{Should we compute exact degrees of sparsity? Logical.
+Defaults to FALSE. Only relevant When alpha.s or alpha.f are in
+the (0,1)
+interval and exact.dg = TRUE.}
 
-\item{use.fbm}{Should we treat omic blocks as Filed Backed Matrix (FBM)? Logical. Defaults to FALSE.}
+\item{use.fbm}{Should we treat omic blocks as
+Filed Backed Matrix (FBM)? Logical. Defaults to FALSE.}
 }
 \value{
-Returns a list with the results of the sparse generalized SVD. If \emph{plot}=TRUE, a series of plots is generated as well.
+Returns a list with the results of the sparse SVD.
+If \emph{plot}=TRUE, a series of plots is generated as well.
 \itemize{
-\item \emph{\strong{B:}}  The object of the (sparse) SVD. Depending of the method used, B can be a extended matrix of normalized omic blocks, a variance-covariance matrix, or a matrix of regression coeficients.
-If at least one of the blocks in 'data.blocks' is of class FBM, is(B,'FBM') is TRUE. Otherwise, is(B,'matrix') is TRUE.
-\item \emph{\strong{dense:}} A list containing the resuls of the dense SVD.\itemize{
-   \item \strong{u:} Matrix with left eigenvectors.
-   \item \strong{v:} Matrix with right eigenvectors.
+\item \emph{\strong{B:}}  The object of the (sparse) SVD.
+Depending of the method used,
+ B can be a extended matrix of normalized omic blocks,
+ a variance-covariance matrix,
+ or a matrix of regression coefficients.
+If at least one of the blocks in 'data.blocks' is of class FBM,
+ is(B,'FBM') is TRUE.
+Otherwise, is(B,'matrix') is TRUE.
+\item \emph{\strong{dense:}} A list containing the resuls of the
+ dense SVD.\itemize{
+   \item \strong{u:} Matrix with left Eigenvectors.
+   \item \strong{v:} Matrix with right Eigenvectors.
    \item \strong{d:} Matrix with singular values.
  }
- \item \emph{\strong{sparse:}} A list containing the results of the sparse SVD.\itemize{
-   \item \strong{u:} Matrix with left eigenvectors.
-   \item \strong{v:} Matrix with right eigenvectors.
+ \item \emph{\strong{sparse:}} A list containing the results of the
+  sparse SVD.
+ \itemize{
+   \item \strong{u:} Matrix with left Eigenvectors.
+   \item \strong{v:} Matrix with right Eigenvectors.
    \item \strong{d:} Matrix with singular values.
-   \item \strong{opt_dg_v} Selected degrees of sparsity for right eigenvectors. 
-   \item \strong{opt_dg_u:} Selected degrees of sparsity for left eigenvectors. 
+   \item \strong{opt_dg_v} Selected degrees of sparsity for
+   right Eigenvectors.
+   \item \strong{opt_dg_u:} Selected degrees of sparsity for
+   left Eigenvectors.
  }
- \item Graphical displays: Depending on the values in 'plot','tSNE','cluster', and 'clus.lab' arguments, the following ggplot objects can be obtained. They contain:\itemize{
-   \item \strong{scree_plot:} Plots of eigenvalues and their first and second order empirical derivatives along PC indexes. 
-   \item \strong{tun_dgSpar_plot:} Plots with the PEV trajectory, as well as its first and second empirical derivatives along the degrees of sparsity path.
-   \item \strong{PC1_2_plot:} Plot of the first two principal components.
-   \item \strong{tSNE_plot:} Plot with the tSNE mapping onto two dimensions.
+ \item Graphical displays: Depending on the values in 'plot',
+ 'tSNE','cluster',
+ and 'clus.lab' arguments, the following ggplot objects can be
+ obtained.
+ They contain:\itemize{
+   \item \strong{scree_plot:} Plots of Eigenvalues and their
+    first and
+   second order empirical derivatives along PC indexes.
+   \item \strong{tun_dgSpar_plot:} Plots with the PEV trajectory,
+   as well as
+   its first and second empirical derivatives along the degrees of
+   sparsity path.
+   \item \strong{PC1_2_plot:} Plot of the first two principal
+   components.
+   \item \strong{tSNE_plot:} Plot with the tSNE mapping onto
+    two dimensions.
    \item \strong{clus_plot:} The output of function tsne2clus.
-   \item \strong{subLabels_vs_PCs:} Plot of the Kruskal-Wallis (or Chi-square) statistics of the association test between PC (or selected subjects) and pre-established subjects groups.
-   \item \strong{clusters_vs_PCs:} Plot of the Kruskal-Wallis (or Chi-square) statistics of the association test between PC (or selected subjects) and detected clusters.
+   \item \strong{subLabels_vs_PCs:} Plot of the Kruskal-Wallis
+   (or Chi-square)
+    statistics of the association test between PC
+    (or selected subjects) and
+     pre-established subjects groups.
+   \item \strong{clusters_vs_PCs:} Plot of the Kruskal-Wallis
+    (or Chi-square)
+   statistics of the association test between PC
+   (or selected subjects) and
+    detected clusters.
  }
- 
+
 }
 }
 \description{
-This function concatenates multiple omic, allowing one of them to be a multivariate numeric response 'Y', or a univariate classification response (to allow both unsupervised and supervised omic integration).
-In general, omic blocks consisting of predictors are concatenated and normalized to create an extended omic matrix 'X'. 
-All the different applications of multivariate techniques within MOSS return a matrix 'B'. 
-MOSS allows to generate results based on different matrices B (e.g. B = X in pca; B = X'Y, for pls; B = (X'X)^-X'Y, for lrr).
+This function concatenates multiple omic, allowing one of them to be a
+multivariate numeric response 'Y', or a univariate classification
+response (to allow both unsupervised and supervised omic integration).
+Omic blocks consisting of predictors are concatenated and
+normalized to create an extended omic matrix 'X'.
+All the different applications of multivariate techniques within MOSS
+return a matrix 'B'.
+MOSS allows to generate results based on different matrices
+B (e.g. B = X in pca; B = X'Y, for pls; B = (X'X)^-X'Y, for lrr).
+Then a sparse singular value decomposition (SVD) is performed
+on the matrix B to obtain latent factors.
+These factors summarize the variability among samples and features.
 }
 \details{
 Once 'dense' solutions are found (the result of SVD on a matrix B),
- the function ssvdEN_sol_path is called to perform sparse SVD (sSVD) on a grid of possible degrees of sparsity (nu) 
- for a possible value of the elastic net parameter (alpha).
-The sSVD is performed using the algorithm of Shen and Huang (2008), extended to include Elastic Net type of regularization. 
-For one latent factor (rank 1 case), the algorithm finds vectors u and v' and scalar d that minimize:
-    \tabular{rl}{
- \tab  ||B - d * uv'||_F^2 + 
-       lambda(nu_v)(alpha_v||v'||_1 + (1 - alpha_v)||v'||_F^2) + 
-       lambda(nu_u)(alpha_u||u||_1 + (1 - alpha_u)||u||_F^2)
- \cr
+the function ssvdEN_sol_path is called to perform sparse SVD (sSVD)
+on a grid of possible degrees of sparsity (nu),
+for a possible value of the elastic net parameter (alpha).
+The sSVD is performed using the algorithm of Shen and Huang (2008),
+extended to include Elastic Net type of regularization.
+For one latent factor (rank 1 case), the algorithm finds vectors u
+and v' and scalar d that minimize:
+\tabular{rl}{
+\tab ||B - d* uv'||_F^2 + lambda(nu_v)(alpha_v||v'||_1 +
+(1 - alpha_v)||v'||_F^2) + lambda(nu_u)(alpha_u||u||_1 +
+(1 - alpha_u)||u||_F^2)
+\cr
 }
-    
-such that ||u|| = 1. The right Eigenvector is obtained from v / ||v|| and the corresponding d from u'Bv. 
-The element lambda(nu_.) is a monotonically decreasing function of nu_. (the number of desired element different from zero) 
-onto positive real numbers, and alpha_. is any number between zero and one balancing shrinking and variable selection. 
-Selecting degree of sparsity: The function allows to tune the degree of sparsity using an ad-hoc method based on 
-the one presented in Shen & Huang (2008, see reference) and generalized for tuning both nu_v and nu_u.
-This is done by exploring the proportion of explained variance (PEV) on a grid of possible values.
-Drastic and/or steep changes in the PEV trajectory accross degrees of sparsity are used for automatical selection (see help for the function ssvdEN_sol_path).
-By impossing the additional assumption of omic blocks being conditionally independent, each multivariate technique can be extended using a 'multi-block' approach, 
-where the contribution of each omic block to the total (co)variance is addressed.
-When response Y is a character column matrix, with classes or categories by subject, 
-each multivariate technique can be extended to perform linear discriminant analysis.
+
+such that ||u|| = 1.
+The right Eigenvector is obtained from v / ||v|| and the
+corresponding d from u'Bv.
+The element lambda(nu_.) is a monotonically decreasing function of
+nu_. (the number of desired element different from zero)
+onto positive real numbers, and alpha_. is any number between
+ zero and one
+balancing shrinking and variable selection.
+Selecting degree of sparsity: The function allows to tune the
+degree of sparsity using an ad-hoc method based on
+the one presented in Shen & Huang (2008, see reference) and
+generalized for tuning both nu_v and nu_u.
+This is done by exploring the proportion of
+explained variance (PEV) on a grid of possible values.
+Drastic and/or steep
+changes in the PEV trajectory across degrees of sparsity are
+used for automatic selection
+(see help for the function ssvdEN_sol_path).
+By imposing the additional assumption of omic blocks
+being conditionally independent, each multivariate technique can
+be extended using a 'multi-block' approach, where the
+contribution of each omic block to the total (co)variance is
+addressed.
+When response Y is a character column matrix,
+with classes or categories by subject,
+each multivariate technique can be extended to perform
+linear discriminant analysis.
 }
 \note{
 \enumerate{
-  \item The function does not return PEV for EN parameter (alpha_v and/or alpha_u), 
-  the user needs to provide a single value for each.
-  \item When number of PC index > 1, columns of T might not be orthogonal.
-  \item Although the user is encouraged to perform data projection and cluster separately, MOSS allows to do this automatically. 
-  However, both tasks might require finner tuning than the provided by default, and computations could become cumbersome.
-  \item Tuning of degrees of sparsity is done heuristically on training set. 
-  In our experience, this results in high specificity, but rather low sensitiviy 
-  (i.e. too liberal cutoffs, as compared with extensive cross-validation on testing set).
-  \item When 'method' is an unsupervised technique, 'K.X' is the number of latent factors returned and used in further analysis.
-   When 'method' is a supervised technique, 'K.X' is used to perform a SVD to facilitate the product of large matrices and inverses.
+  \item The function does not return PEV for EN parameter
+  (alpha_v and/or alpha_u), the user needs to provide
+  a single value for each.
+  \item When number of PC index > 1,
+  columns of T might not be orthogonal.
+  \item Although the user is encouraged to
+  perform data projection and
+  cluster separately, MOSS allows to do this automatically.
+  However, both tasks might require further tuning than the
+  provided by default, and computations could become cumbersome.
+  \item Tuning of degrees of sparsity is done heuristically
+  on training set. In our experience, this results in
+  high specificity, but rather low sensitivity.
+  (i.e. too liberal cutoffs, as compared with
+  extensive cross-validation on testing set).
+  \item When 'method' is an unsupervised technique,
+  'K.X' is the number of
+  latent factors returned and used in further analysis.
+   When 'method' is a supervised technique,
+   'K.X' is used to perform a SVD
+   to facilitate the product of large matrices and inverses.
   \item If 'K.X' (or 'K.Y') equal 1, no plots are returned.
-  \item Although the degree of sparsity maps onto number of features/subjects for Lasso, the user needs to be aware that this conceptual correspondence
-        is lost for full EN (alpha belonging to (0, 1); e.g. the number of features selected with alpha < 1 will be eventually larger than the optimal degree of sparsity).
-        This allows to rapidly increase the number of non-zero elements when tuning the degrees of sparsity. 
-        In order to get exact values for the degrees of sparsity at subjects or features levels, the user needs to 
-        set the value of 'exact.dg' parameter from 'FALSE' (the default) to 'TRUE'.
+  \item Although the degree of sparsity maps onto number of
+  features/subjects for Lasso, the user needs to be aware that this
+   conceptual correspondence
+        is lost for full EN (alpha belonging to (0, 1);
+         e.g. the number of features selected with alpha < 1 will
+         be eventually larger than the optimal degree of sparsity).
+        This allows to rapidly increase the number of
+        non-zero elements
+         when tuning the degrees of sparsity.
+        In order to get exact values for the degrees of sparsity
+         at subjects
+        or features levels, the user needs to
+        set the value of 'exact.dg' parameter from 'FALSE'
+        (the default) to 'TRUE'.
 }
 }
 \examples{
-#Example1: sparse PCA of a list of omic blocks.
+# Example1: sparse PCA of a list of omic blocks.
 library("MOSS")
 sim_data <- simulate_data()
 set.seed(43)
 
-#Extracting simulated omic blocks.
+# Extracting simulated omic blocks.
 sim_blocks <- sim_data$sim_blocks
 
-#Extracting subjects and features labels.
+# Extracting subjects and features labels.
 lab.sub <- sim_data$labels$lab.sub
 lab.feat <- sim_data$labels$lab.feat
 out <- moss(sim_blocks[-4],
-     method="pca",
-     nu.v = seq(1,200,by=20),
-     nu.u = seq(1,100,by=10),
-     alpha.v = 0.5,
-     alpha.u = 1)
-
-\dontrun{
+  method = "pca",
+  nu.v = seq(1, 200, by = 50),
+  nu.u = seq(1, 100, by = 20),
+  alpha.v = 0.5,
+  alpha.u = 1
+)
+\donttest{
 library(ggplot2)
 library(ggthemes)
 library(viridis)
@@ -180,73 +304,97 @@ library(fpc)
 
 set.seed(43)
 
-#Example2: sparse PCA with t-SNE, clustering, and association with predefined groups of subjects.
+# Example2: sparse PCA with t-SNE, clustering, and association with
+# predefined groups of subjects.
 out <- moss(sim_blocks[-4],
-     method="pca",
-     nu.v = seq(1,200,by=10),
-     nu.u = seq(1,100,by=2),
-     alpha.v = 0.5,
-     alpha.u = 1,
-     tSNE=TRUE,
-     cluster=TRUE,
-     clus.lab=lab.sub,
-     plot=TRUE)
-     
-#This shows clusters obtained with labels from pre-defined groups of subjects.
+  method = "pca",
+  nu.v = seq(1, 200, by = 10),
+  nu.u = seq(1, 100, by = 2),
+  alpha.v = 0.5,
+  alpha.u = 1,
+  tSNE = TRUE,
+  cluster = TRUE,
+  clus.lab = lab.sub,
+  plot = TRUE
+)
+
+# This shows clusters obtained with labels from pre-defined groups
+# of subjects.
 out$clus_plot
 
-#This shows the statistical overlap between PCs and the pre-defined groups of subjects.
+# This shows the statistical overlap between PCs and the pre-defined
+# groups of subjects.
 out$subLabels_vs_PCs
 
-#Example3: Multi-block PCA with sparsity.
+# Example3: Multi-block PCA with sparsity.
 out <- moss(sim_blocks[-4],
-     method="mbpca",
-     nu.v = seq(1,200,by=10),
-     nu.u = seq(1,100,by=2),
-     alpha.v = 0.5,
-     alpha.u = 1,
-     tSNE=TRUE,
-     cluster=TRUE,
-     clus.lab=lab.sub,
-     plot=TRUE)
- out$clus_plot
- #This shows the 'weight' each omic block has on the variability explained by each PC.
- # Weights in each PC add up to one.
- out$block_weights
-
-#Example4: Partial least squares with sparsity (PLS).
-out <- moss(sim_blocks[-4],
-     K.X=500,
-     K.Y=2,
-     method="pls",
-     nu.v = seq(1,100,by=2),
-     nu.u = seq(1,100,by=2),
-     alpha.v = 1,
-     alpha.u = 1,
-     tSNE=TRUE,
-     cluster=TRUE,
-     clus.lab=lab.feat[1:2e3],
-     resp.block=3,
-     plot=TRUE)
- out$clus_plot
- 
- # Get some measure of accuracy at detecting features with signal versus background noise.
- table(out$sparse$u[,1] != 0,lab.feat[1:2000])
- table(out$sparse$v[,1] != 0,lab.feat[2001:3000])
-
-#Example5: PCA-LDA
-out <- moss(sim_blocks,
-     method="pca-lda",
-     cluster=TRUE,
-     resp.block=4,
-     clus.lab=lab.sub,
-     plot=TRUE)
+  method = "mbpca",
+  nu.v = seq(1, 200, by = 10),
+  nu.u = seq(1, 100, by = 2),
+  alpha.v = 0.5,
+  alpha.u = 1,
+  tSNE = TRUE,
+  cluster = TRUE,
+  clus.lab = lab.sub,
+  plot = TRUE
+)
 out$clus_plot
- }
+
+# This shows the 'weight' each omic block has on the variability
+# explained by each PC. Weights in each PC add up to one.
+out$block_weights
+
+# Example4: Partial least squares with sparsity (PLS).
+out <- moss(sim_blocks[-4],
+  K.X = 500,
+  K.Y = 2,
+  method = "pls",
+  nu.v = seq(1, 100, by = 2),
+  nu.u = seq(1, 100, by = 2),
+  alpha.v = 1,
+  alpha.u = 1,
+  tSNE = TRUE,
+  cluster = TRUE,
+  clus.lab = lab.feat[1:2e3],
+  resp.block = 3,
+  plot = TRUE
+)
+out$clus_plot
+
+# Get some measure of accuracy at detecting features with signal
+# versus background noise.
+table(out$sparse$u[, 1] != 0, lab.feat[1:2000])
+table(out$sparse$v[, 1] != 0, lab.feat[2001:3000])
+
+# Example5: PCA-LDA
+out <- moss(sim_blocks,
+  method = "pca-lda",
+  cluster = TRUE,
+  resp.block = 4,
+  clus.lab = lab.sub,
+  plot = TRUE
+)
+out$clus_plot
+}
+
 }
 \references{
 \itemize{
-   \item Shen, Haipeng, and Jianhua Z. Huang. 2008. Sparse Principal Component Analysis via Regularized Low Rank Matrix approximation. Journal of Multivariate Analysis 99 (6). Academic Press: 1015_34. 
-   \item Baglama, Jim, Lothar Reichel, and B W Lewis. 2018. Irlba: Fast Truncated Singular Value Decomposition and Principal Components Analysis for Large Dense and Sparse Matrices.
+   \item Shen, Haipeng, and Jianhua Z. Huang. 2008.
+   Sparse Principal Component
+   Analysis via Regularized Low Rank Matrix approximation.
+   Journal of Multivariate Analysis 99 (6). Academic Press: 1015_34.
+   \item Baglama, Jim, Lothar Reichel, and B W Lewis. 2018.
+    Irlba: Fast Truncated Singular Value Decomposition and
+     Principal Components Analysis for Large Dense and
+   Sparse Matrices.
+   \item Taskesen, Erdogan, Sjoerd M. H. Huisman, Ahmed Mahfouz,
+    Jesse H. Krijthe, Jeroen de Ridder, Anja van de Stolpe,
+    Erik van den Akker, Wim Verheagh, and Marcel J. T. Reinders. 2016.
+     Pan-Cancer Subtyping in a 2D-Map Shows Substructures
+     That Are Driven by Specific Combinations of Molecular
+      Characteristics. Scientific Reports 6 (1):24949.
+      \item van der Maaten L, Hinton G. Visualizing Data using t-SNE.
+ J Mach Learn Res. 2008;9: 2579–2605
  }
 }

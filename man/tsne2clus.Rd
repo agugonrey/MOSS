@@ -21,17 +21,27 @@ tsne2clus(
 \arguments{
 \item{S.tsne}{Outcome of function "pca2tsne"}
 
-\item{ann}{Subjects' annotation data. An incidence matrix assigning subjects to classes of biological relevance. Meant to tune cluster assignation via BHI. If ann=NULL, the number of clusters is tuned with the Silhouette index instead of BHI. Defaults to NULL.}
+\item{ann}{Subjects' annotation data.
+An incidence matrix assigning subjects to classes of biological
+ relevance.
+ Meant to tune cluster assignation via BHI.
+  If ann=NULL, the number of clusters is tuned with the
+   Silhouette index instead of BHI. Defaults to NULL.}
 
-\item{labels}{Character vector with labels describing subjects. Meant to assing aesthetics to the visual display of clusters.}
+\item{labels}{Character vector with labels describing subjects.
+Meant to assign aesthetics to the visual display of clusters.}
 
-\item{aest}{Data frame containing points shape and color. Defaults to NULL.}
+\item{aest}{Data frame containing points shape and color.
+Defaults to NULL.}
 
-\item{eps_res}{How many eps values should be explored between the range specified?}
+\item{eps_res}{How many eps values should be explored between the rang
+e specified?}
 
-\item{eps_range}{Vector containing the minimum and maximum eps values to be explored. Defaults to c(0, 4).}
+\item{eps_range}{Vector containing the minimum and
+maximum eps values to be explored. Defaults to c(0, 4).}
 
-\item{min.clus.size}{Minimum size a cluster to appear in the visual display. Defaults to 10}
+\item{min.clus.size}{Minimum size a cluster to appear in the visual
+display. Defaults to 10}
 
 \item{group.names}{Title for the legend's key if aest is specified.}
 
@@ -42,64 +52,91 @@ tsne2clus(
 \item{clus}{Should we do clustering? Defaults to TRUE.}
 }
 \value{
-\itemize{A list with the results of the DBSCAN clustering and (if argument 'plot'=TRUE) the corresponding graphical displays.
-\item dbscan.res: a list with the results of the (sparse) SVD, containing: 
+\itemize{A list with the results of the DBSCAN
+clustering and (if argument 'plot'=TRUE) the corresponding
+graphical displays.
+\item dbscan.res: a list with the results of the (sparse) SVD,
+containing:
  \itemize{
    \item cluster: Cluster partition.
-   \item eps: Optimal EPS according to the Silhouette or Biological Homogeneity indexes criteria.
+   \item eps: Optimal EPS according to the Silhouette or Biological
+   Homogeneity indexes criteria.
    \item SIL: Maximum peak in the trajectory of the Silhouette index.
-   \item BHI: Maximum peak in the trajectory of the Biological Homogeneity index.
+   \item BHI: Maximum peak in the trajectory of the Biological
+   Homogeneity index.
  }
 \item clusters.plot: A ggplot object with the clusters graphical display.
 }
 }
 \description{
-Finds clusters on a 2 dimensional map using DBSCAN.
+Finds clusters on a 2 dimensional map using
+Density-based spatial clustering of applications with noise
+(DBSCAN; Esther et al. 1996).
 }
 \details{
-The function takes the outcome of pca2tsne (or a list containing any two-columns matrix) and finds clusters via DBSCAN.
- It extends code from the MEREDITH and clValid R packages to tune DBSCAN parameters with Silhouette or Biological Homogeneity indexes.
+The function takes the outcome of pca2tsne (or a list containing any
+ two-columns matrix) and finds clusters via DBSCAN.
+ It extends code from the MEREDITH (Taskesen et al. 2016) and
+ clValid (Datta & Datta, 2018) R packages to tune DBSCAN parameters
+ with Silhouette or
+ Biological Homogeneity indexes.
 }
 \examples{
-\dontrun{
+\donttest{
 library(MOSS)
 library(viridis)
 library(cluster)
 library(annotate)
 
-#Using the 'iris' data tow show cluster definition via BHI criterion.
+# Using the 'iris' data tow show cluster definition via BHI criterion.
 set.seed(42)
- data(iris)
-#Scaling columns.
- X <- scale(iris[,-5])
-#Calling pca2tsne to map the three variables onto a 2-D map.
- Z <- pca2tsne(X, perp = 30, n.samples = 1, n.iter = 1000)
-#Using 'species' as previous knoledge to identify clusters.
- ann <- model.matrix(~-1 + iris[,5])
-#Getting clusters.
- tsne2clus(Z,
- ann = ann,
- labels = iris[,5],
- aest = aest.f(iris[,5]),
- group.names = "Species",
- eps_range = c(0,3))
+data(iris)
+# Scaling columns.
+X <- scale(iris[, -5])
+# Calling pca2tsne to map the three variables onto a 2-D map.
+Z <- pca2tsne(X, perp = 30, n.samples = 1, n.iter = 1000)
+# Using 'species' as previous knoledge to identify clusters.
+ann <- model.matrix(~ -1 + iris[, 5])
+# Getting clusters.
+tsne2clus(Z,
+  ann = ann,
+  labels = iris[, 5],
+  aest = aest.f(iris[, 5]),
+  group.names = "Species",
+  eps_range = c(0, 3)
+)
 
-#Example of usage within moss.
+# Example of usage within moss.
 set.seed(43)
 sim_blocks <- simulate_data()$sim_blocks
 out <- moss(sim_blocks[-4],
-     tSNE=TRUE,
-     clus=list(eps_range=c(0,4),eps_res=100,min_clus_size=1),
-     plot=TRUE)
-out$clus_plot      
+  tSNE = TRUE,
+  cluster = list(eps_range = c(0, 4), eps_res = 100, min_clus_size = 1),
+  plot = TRUE
+)
+out$clus_plot
 out$clusters_vs_PCs
 }
 }
 \references{
 \itemize{
-   \item Ester, Martin, Martin Ester, Hans-Peter Kriegel, Jorg Sander, and Xiaowei Xu. 1996. "A Density-Based Algorithm for Discovering Clusters in Large Spatial Databases with Noise," 226_231.
-   \item Hahsler, Michael, and Matthew Piekenbrock. 2017. "Dbscan: Density Based Clustering of Applications with Noise (DBSCAN) and Related Algorithms." https://cran.r-project.org/package=dbscan.
-   \item Datta, Susmita, and Somnath Datta. 2006. Methods for Evaluating Clustering Algorithms for Gene Expression Data Using a Reference Set of Functional Classes. BMC Bioinformatics 7 (1). BioMed Central:397. 
-   \item Taskesen, Erdogan, Sjoerd M. H. Huisman, Ahmed Mahfouz, Jesse H. Krijthe, Jeroen de Ridder, Anja van de Stolpe, Erik van den Akker, Wim Verheagh, and Marcel J. T. Reinders. 2016. Pan-Cancer Subtyping in a 2D-Map Shows Substructures That Are Driven by Specific Combinations of Molecular Characteristics. Scientific Reports 6 (1):24949.
+   \item Ester, Martin, Martin Ester, Hans-Peter Kriegel,
+   Jorg Sander, and Xiaowei Xu. 1996.
+   "A Density-Based Algorithm for Discovering Clusters in
+    Large Spatial Databases with Noise," 226_231.
+   \item Hahsler, Michael, and Matthew Piekenbrock. 2017.
+   "Dbscan: Density Based Clustering of Applications with Noise
+   (DBSCAN) and Related Algorithms."
+   https://cran.r-project.org/package=dbscan.
+   \item Datta, Susmita, and Somnath Datta. 2006. Methods for
+    Evaluating Clustering Algorithms for Gene Expression Data
+    Using a Reference Set of Functional Classes.
+    BMC Bioinformatics 7 (1). BioMed Central:397.
+   \item Taskesen, Erdogan, Sjoerd M. H. Huisman, Ahmed Mahfouz,
+    Jesse H. Krijthe, Jeroen de Ridder, Anja van de Stolpe,
+    Erik van den Akker, Wim Verheagh, and Marcel J. T. Reinders. 2016.
+     Pan-Cancer Subtyping in a 2D-Map Shows Substructures
+     That Are Driven by Specific Combinations of Molecular
+      Characteristics. Scientific Reports 6 (1):24949.
  }
 }

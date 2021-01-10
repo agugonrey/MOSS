@@ -7,16 +7,20 @@
 aest.f(x, n.cat = 2, option = "D")
 }
 \arguments{
-\item{x}{Character vector with labels or a numerical vector split in 'n.cat' categories.}
+\item{x}{Character vector with labels or a numerical vector split in
+'n.cat' categories.}
 
-\item{n.cat}{Number of categories to split vector 'x'. Numeric. Ignored if is(x,'character')=TRUE.}
+\item{n.cat}{Number of categories to split vector 'x'. Numeric.
+Ignored if is(x,'character')=TRUE.}
 
-\item{option}{Controls color palette. One of the possible 'option' arguments for the 'viridis' function.}
+\item{option}{Controls color palette.
+One of the possible 'option' arguments for the 'viridis' function.}
 }
 \value{
-A data.frame with labels as rownames and two columns representing point colors and shape.
+A data.frame with labels as rownames and two
+columns representing point colors and shape.
 }
 \description{
-This function is called by functions within MOSS that plot stuff. 
+This function is called by functions within MOSS that plot stuff.
 It simply assigns colors and shape to points based on input labels.
 }

@@ -9,20 +9,23 @@ metdat(x, i, sep = "-", collapse = sep)
 \arguments{
 \item{x}{A character vector.}
 
-\item{i}{Index specifying which one of the character chunks separated by 'sep' is to be picked.}
+\item{i}{Index specifying which one of the character chunks
+separated by 'sep' is to be picked.}
 
 \item{sep}{Character separating chunks of characters. Defaults to "-".}
 
-\item{collapse}{New character vector separating chunks of characters. Default to 'sep'.}
+\item{collapse}{New character vector separating chunks of characters.
+Default to 'sep'.}
 }
 \value{
-A character vector with the extracted (and merged) chunks of characters from input vector.
+A character vector with the extracted (and merged) chunks of
+characters from input vector.
 }
 \description{
 Extracts (and merges) characters chunks.
 }
 \examples{
-x <- "this is one chunk of characters & this is another" 
+x <- "this is one chunk of characters & this is another"
 metdat(x, 1, " & ")
 metdat(x, 2, " & ")
 metdat(x, c(1, 2), " & ")

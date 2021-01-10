@@ -13,6 +13,7 @@ Documentation:
   Type 'help(moss)' for package overview and examples.
 
 Type 'sim.data <- simulate_data()',
-to generate a small simulated data set with three omics and one categorical variable. 
+to generate a small simulated data set with three omics and 
+one categorical variable. 
 ")
 }
