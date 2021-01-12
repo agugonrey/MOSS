@@ -24,7 +24,7 @@ tsne2clus(
 \item{ann}{Subjects' annotation data.
 An incidence matrix assigning subjects to classes of biological
  relevance.
- Meant to tune cluster assignation via BHI.
+ Meant to tune cluster assignation via Biological Homogeneity Index (BHI).
   If ann=NULL, the number of clusters is tuned with the
    Silhouette index instead of BHI. Defaults to NULL.}
 
@@ -34,22 +34,23 @@ Meant to assign aesthetics to the visual display of clusters.}
 \item{aest}{Data frame containing points shape and color.
 Defaults to NULL.}
 
-\item{eps_res}{How many eps values should be explored between the rang
-e specified?}
+\item{eps_res}{How many eps values should be explored between the 
+specified range?}
 
 \item{eps_range}{Vector containing the minimum and
 maximum eps values to be explored. Defaults to c(0, 4).}
 
-\item{min.clus.size}{Minimum size a cluster to appear in the visual
+\item{min.clus.size}{Minimum size for a cluster to appear in the visual
 display. Defaults to 10}
 
-\item{group.names}{Title for the legend's key if aest is specified.}
+\item{group.names}{The title for the legend's key if 'aest' is specified.}
 
-\item{xlab}{Name of the xlab. Defaults to "x: tSNE(X)"}
+\item{xlab}{Name of the 'xlab'. Defaults to "x: tSNE(X)"}
 
-\item{ylab}{Name of the ylab. Defaults to "y: tSNE(X)"}
+\item{ylab}{Name of the 'ylab'. Defaults to "y: tSNE(X)"}
 
-\item{clus}{Should we do clustering? Defaults to TRUE.}
+\item{clus}{Should we do clustering? Defaults to TRUE. If false, only
+point aesthetics are applied.}
 }
 \value{
 \itemize{A list with the results of the DBSCAN
@@ -59,13 +60,13 @@ graphical displays.
 containing:
  \itemize{
    \item cluster: Cluster partition.
-   \item eps: Optimal EPS according to the Silhouette or Biological
+   \item eps: Optimal eps according to the Silhouette or Biological
    Homogeneity indexes criteria.
    \item SIL: Maximum peak in the trajectory of the Silhouette index.
    \item BHI: Maximum peak in the trajectory of the Biological
    Homogeneity index.
  }
-\item clusters.plot: A ggplot object with the clusters graphical display.
+\item clusters.plot: A ggplot object with the clusters' graphical display.
 }
 }
 \description{

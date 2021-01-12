@@ -77,13 +77,9 @@ A list with the results of the (sparse) SVD, containing:
 }
 \description{
 This function performs sparse singular value decomposition (SVD)
-at subjects' level, features,
-or both, via Elastic Net types of penalties.
-It uses a penalized SVD, or principal components analysis (PCA),
- that imposes sparsity in both,
-left and right, singular vectors.
-For one PC (rank 1 case), the algorithm finds vectors u,
- w that minimize:
+on a matrix 'x' via Elastic Net types of penalties.
+For one PC (rank 1 case), the algorithm finds left and right Eigenvectors
+(u and w, respectively), that minimize:
  ||x - u w'||_F^2 +
  lambda_w (alpha_w||w||_1 +
  (1 - alpha_w)||w||_F^2) +
@@ -97,8 +93,7 @@ specified desired degree of sparsity
 }
 \details{
 The function allows the use of the base svd function
- for relatively small
-problems.
+ for relatively small problems.
 For larger problems, functions for fast-partial SVD
 (irlba and big_randomSVD, from irlba and bigstatsr packages) are used.
 }
@@ -107,8 +102,8 @@ When elastic net is used ('alpha.s' or 'alpha.f' in the (0,1)
 interval), the resulting number of non-zero subjects or features
 is larger than the 'dg.spar.subjects' or 'dg.spar.features' values.
  This allows to rapidly increase the number of non-zero elements when
-  tuning the degrees of sparsity with
-function ssvdEN_sol_path. In order to get exact values for the degrees
+  tuning the degrees of sparsity with function ssvdEN_sol_path. 
+In order to get exact values for the degrees
  of sparsity at subjects or features levels, the user needs to
 set the value of 'exact.dg' parameter from 'FALSE' (the default)
 to 'TRUE'.

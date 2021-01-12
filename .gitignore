@@ -16,3 +16,4 @@ vignettes/*.doc
 *.knit.md
 .Renviron
 .DS_Store
+.Rproj.user

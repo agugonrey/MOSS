@@ -2,8 +2,8 @@ Package: MOSS
 Title: Multi-Omic Integration via Sparse Singular Value
     Decomposition
 Version: 0.1.0
-Author: Agustin Gonzalez-Reymundez, Alexander Grueneberg, Ana I.
-    Vazquez.
+Author: Agustin Gonzalez-Reymundez, Alexander Grueneberg, Ana
+    I.Vazquez.
 Maintainer: Agustin Gonzalez-Reymundez <agugonrey@gmail.com>
 Description: High dimensionality, noise and heterogeneity among
     samples and features challenge the omic integration task. Here we

@@ -2,30 +2,30 @@
 % Please edit documentation in R/metdat.R
 \name{metdat}
 \alias{metdat}
-\title{Extracts (and merges) characters chunks.}
+\title{Extracts (and merges) chunks of characters.}
 \usage{
 metdat(x, i, sep = "-", collapse = sep)
 }
 \arguments{
 \item{x}{A character vector.}
 
-\item{i}{Index specifying which one of the character chunks
-separated by 'sep' is to be picked.}
+\item{i}{Index specifying which chunks of characters 
+will be extracted (and merged).}
 
-\item{sep}{Character separating chunks of characters. Defaults to "-".}
+\item{sep}{Chunks separator character. Defaults to "-".}
 
-\item{collapse}{New character vector separating chunks of characters.
+\item{collapse}{New chunks separator character.
 Default to 'sep'.}
 }
 \value{
 A character vector with the extracted (and merged) chunks of
-characters from input vector.
+characters.
 }
 \description{
-Extracts (and merges) characters chunks.
+Extracts (and merges) chunks of characters.
 }
 \examples{
-x <- "this is one chunk of characters & this is another"
+x <- "this is one chunk of characters & this is another one"
 metdat(x, 1, " & ")
 metdat(x, 2, " & ")
 metdat(x, c(1, 2), " & ")

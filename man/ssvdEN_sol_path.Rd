@@ -91,13 +91,13 @@ A list with the results of the (sparse) SVD and (if argument 'plot'=TRUE)
    \item opt.dg.right: Selected degrees of sparsity for right eigenvectors.
    \item opt.dg.left: Selected degrees of sparsity for left eigenvectors.
  }
-\item plot: A ggplot object with the graphical display of solution paths.
+\item plot: A ggplot object.
 }
 }
 \description{
 This function allows to explore values on the solution path of the
 sparse singular value decomposition (SVD) problem.
-The goal of this is to select the degree of sparsity of subjects,
+The goal of this is to tune the degree of sparsity of subjects,
 features, or both subjects/features.
 The function performs a penalized SVD that imposes sparsity/smoothing
 in both left and right singular vectors.
@@ -108,11 +108,10 @@ by two 'alpha' parameters. The proportion of variance explained is
 }
 \details{
 The function returns the degree of sparsity for which the change in PEV
-is the steepest or most abrupt. This heuristic relaxes the need of
+is the steepest, or the most abrupt. This heuristic relaxes the need of
 tuning parameters on a testing set.
 Nevertheless, our algorithm can be much more liberal than, say,
-cross-validation. As a consequence, we might compromise statistical power.
- See the 'Examples' below.
+cross-validation. As a consequence, statistical power might be compromised.
 
 For one PC (rank 1 case), the algorithm finds vectors u, w that minimize:
    ||x - u w'||_F^2 + lambda_w (alpha_w||w||_1 + (1 - alpha_w)||w||_F^2)

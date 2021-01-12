@@ -1,15 +1,15 @@
 #' Assign point color and shape aesthetics.
 #'
-#' This function is called by functions within MOSS that plot stuff.
+#' This function is called by moss whenever a plot is produced.
 #' It simply assigns colors and shape to points based on input labels.
-#' @param x Character vector with labels or a numerical vector split in
-#' 'n.cat' categories.
+#' @param x Character vector with labels, or a numerical vector to be 
+#' discretized in 'n.cat' categories.
 #' @param n.cat Number of categories to split vector 'x'. Numeric.
-#' Ignored if is(x,'character')=TRUE.
+#' Ignored if 'x' is a character vector.
 #' @param option Controls color palette.
 #' One of the possible 'option' arguments for the 'viridis' function.
 #' @return A data.frame with labels as rownames and two
-#' columns representing point colors and shape.
+#' columns representing point colors and shape, respectively.
 #' @export
 aest.f <- function(x, n.cat = 2, option = "D") {
   if (!requireNamespace("viridis", quietly = TRUE)) {

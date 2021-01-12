@@ -2,7 +2,7 @@
 % Please edit documentation in R/moss.R
 \name{moss}
 \alias{moss}
-\title{Multi-omic integration via singular value decomposition.}
+\title{Multi-Omic integration via Sparse Singular value decomposition.}
 \usage{
 moss(
   data.blocks,
@@ -179,18 +179,18 @@ Otherwise, is(B,'matrix') is TRUE.
 }
 }
 \description{
-This function concatenates multiple omic, allowing one of them to be a
-multivariate numeric response 'Y', or a univariate classification
-response (to allow both unsupervised and supervised omic integration).
-Omic blocks consisting of predictors are concatenated and
-normalized to create an extended omic matrix 'X'.
-All the different applications of multivariate techniques within MOSS
-return a matrix 'B'.
-MOSS allows to generate results based on different matrices
-B (e.g. B = X in pca; B = X'Y, for pls; B = (X'X)^-X'Y, for lrr).
-Then a sparse singular value decomposition (SVD) is performed
-on the matrix B to obtain latent factors.
-These factors summarize the variability among samples and features.
+This function integrates omic blocks to perform sparse singular
+value decomposition (SVD), non-linear embedding, and/or cluster
+analysis. Both supervised and unsupervised methods are supported.
+In both cases, if multiple omic blocks are used as predictors, they
+are concatenated and normalized to form an 'extended' omic matrix 'X' 
+(Gonzalez-Reymundez and Vazquez, 2020). Supervised analysis can be
+obtained by indicating which omic block defines a multivariate 
+response 'Y'. Each method within MOSS returns a matrix 'B', 
+which form depends on the technique used
+(e.g. B = X in pca; B = X'Y, for pls; B = (X'X)^-X'Y, for lrr).
+A sparse SVD of matrix B is then obtained to summarize the variability
+among samples and features in terms of latent factors.
 }
 \details{
 Once 'dense' solutions are found (the result of SVD on a matrix B),
@@ -202,10 +202,10 @@ extended to include Elastic Net type of regularization.
 For one latent factor (rank 1 case), the algorithm finds vectors u
 and v' and scalar d that minimize:
 \tabular{rl}{
-\tab ||B - d* uv'||_F^2 + lambda(nu_v)(alpha_v||v'||_1 +
-(1 - alpha_v)||v'||_F^2) + lambda(nu_u)(alpha_u||u||_1 +
-(1 - alpha_u)||u||_F^2)
-\cr
+||B-d* uv'||^2 +
+lambda(nu_v)(alpha_v||v'||_1 +
+(1-alpha_v)||v'||^2) + lambda(nu_u)(alpha_u||u||_1 +
+(1-alpha_u)||u||^2)
 }
 
 such that ||u|| = 1.
@@ -380,6 +380,9 @@ out$clus_plot
 }
 \references{
 \itemize{
+   \item Gonzalez-Reymundez, and Vazquez. 2020. Multi-omic Signatures
+   identify pan-cancer classes of tumors beyond tissue of origin.
+   Scientific Reports 10 (1):8341  
    \item Shen, Haipeng, and Jianhua Z. Huang. 2008.
    Sparse Principal Component
    Analysis via Regularized Low Rank Matrix approximation.

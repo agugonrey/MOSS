@@ -14,7 +14,7 @@
 #' @param ann Subjects' annotation data.
 #' An incidence matrix assigning subjects to classes of biological
 #'  relevance.
-#'  Meant to tune cluster assignation via BHI.
+#'  Meant to tune cluster assignation via Biological Homogeneity Index (BHI).
 #'   If ann=NULL, the number of clusters is tuned with the
 #'    Silhouette index instead of BHI. Defaults to NULL.
 #' @param labels Character vector with labels describing subjects.
@@ -23,14 +23,15 @@
 #' Defaults to NULL.
 #' @param eps_range Vector containing the minimum and
 #' maximum eps values to be explored. Defaults to c(0, 4).
-#' @param eps_res How many eps values should be explored between the rang
-#' e specified?
-#' @param min.clus.size Minimum size a cluster to appear in the visual
+#' @param eps_res How many eps values should be explored between the 
+#' specified range?
+#' @param min.clus.size Minimum size for a cluster to appear in the visual
 #' display. Defaults to 10
-#' @param group.names Title for the legend's key if aest is specified.
-#' @param xlab Name of the xlab. Defaults to "x: tSNE(X)"
-#' @param ylab Name of the ylab. Defaults to "y: tSNE(X)"
-#' @param clus Should we do clustering? Defaults to TRUE.
+#' @param group.names The title for the legend's key if 'aest' is specified.
+#' @param xlab Name of the 'xlab'. Defaults to "x: tSNE(X)"
+#' @param ylab Name of the 'ylab'. Defaults to "y: tSNE(X)"
+#' @param clus Should we do clustering? Defaults to TRUE. If false, only
+#' point aesthetics are applied.
 #' @return \itemize{A list with the results of the DBSCAN
 #' clustering and (if argument 'plot'=TRUE) the corresponding
 #' graphical displays.
@@ -38,13 +39,13 @@
 #' containing:
 #'  \itemize{
 #'    \item cluster: Cluster partition.
-#'    \item eps: Optimal EPS according to the Silhouette or Biological
+#'    \item eps: Optimal eps according to the Silhouette or Biological
 #'    Homogeneity indexes criteria.
 #'    \item SIL: Maximum peak in the trajectory of the Silhouette index.
 #'    \item BHI: Maximum peak in the trajectory of the Biological
 #'    Homogeneity index.
 #'  }
-#' \item clusters.plot: A ggplot object with the clusters graphical display.
+#' \item clusters.plot: A ggplot object with the clusters' graphical display.
 #' }
 #' @references \itemize{
 #'    \item Ester, Martin, Martin Ester, Hans-Peter Kriegel,

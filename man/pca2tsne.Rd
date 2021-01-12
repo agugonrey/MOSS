@@ -12,23 +12,20 @@ and subjects as rows.}
 
 \item{perp}{Perplexity value. Defaults to 50.}
 
-\item{n.samples}{Number of times the algorithm from different random
-initial conditions. Defaults to 1.}
+\item{n.samples}{Number of times the algorithm starts from 
+different random initial conditions. Defaults to 1.}
 
 \item{n.iter}{Number of iterations for each run of the algorithm.
 Defaults to 1000.}
 }
 \value{
-Returns the tSNE (output of function 'Rtsne::Rtsne') with
-the smallest error across the 'n.samples' random starts.
+Returns output of function 'Rtsne::Rtsne' from the random initial
+condition with the smallest 'reconstruction error'.
 }
 \description{
 This function is called by moss whenever 'moss(tSNE=TRUE)' to project
 latent factors onto two dimensions via t-stochastic neighbor embedding
- (tSNE)
-}
-\details{
-However, it can be used on any generic data matrix.
+ (tSNE) However, it can be used on any generic data matrix.
 The function uses the Barnes-Hut tSNE algorithm from Rtsne package,
  and uses an iterative procedure to select a tSNE map minimizing the
   projection cost across several random initial conditions.
@@ -44,7 +41,7 @@ sim_blocks <- simulate_data()$sim_blocks
 Z <- pca2tsne(sim_blocks$`Block 3`, perp = 50, n.samples = 1, n.iter = 1e3)$Y
 plot(Z, xlab = "x_tSNE(X)", ylab = "y_tSNE(X)")
 
-# Example of use within moss.
+# Example of usage within moss.
 moss(sim_blocks[-4],
   tSNE = list(
     perp = 50,
