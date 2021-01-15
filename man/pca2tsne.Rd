@@ -33,14 +33,14 @@ The function is inspired by the iterative procedure discussed in
  Taskesen et al. 2016 and code originally provided with the publication.
 }
 \examples{
-\dontrun{
+
 library("MOSS")
 sim_blocks <- simulate_data()$sim_blocks
 
 # Example of pca2tsne usage.
 Z <- pca2tsne(sim_blocks$`Block 3`, perp = 50, n.samples = 1, n.iter = 1e3)$Y
 plot(Z, xlab = "x_tSNE(X)", ylab = "y_tSNE(X)")
-
+\donttest{
 # Example of usage within moss.
 moss(sim_blocks[-4],
   tSNE = list(
