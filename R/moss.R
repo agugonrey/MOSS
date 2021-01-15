@@ -606,37 +606,31 @@ Linear Discriminant Analysis
   if (verbose) {
     # Penalty types by type of Eigenvector.
     if (alpha.v > 1 | alpha.v < 0) {
-      stop("alpha.v must be a number 
-                                        within [0,1]")
+      stop("alpha.v must be a number within [0,1]")
     } else {
       if (alpha.v < 1) {
         if (alpha.v == 0) {
-          message("Ridge shrinking in RIGHT Eigenvectors 
-                                  (no feature selection).")
+message("Ridge shrinking in RIGHT Eigenvectors (no feature selection).")
         } else {
-          message("Elastic net shrinking & selection in 
-                     RIGHT Eigenvectors.")
+  message("Elastic net shrinking & selection in RIGHT Eigenvectors.")
         }
       }
-      else if (is.null(nu.v) == FALSE) message("LASSO in
-                                               RIGHT Eigenvectors.")
+      else if (is.null(nu.v) == FALSE) 
+        message("LASSO in RIGHT Eigenvectors.")
     }
 
     if (alpha.u > 1 | alpha.u < 0) {
-      stop("alpha.u must be a number
-                                        within [0,1]")
+      stop("alpha.u must be a number within [0,1]")
     } else {
       if (alpha.u < 1) {
         if (alpha.u == 0) {
-          message("Ridge shrinking in LEFT Eigenvectors 
-                                  (no feature selection).")
+message("Ridge shrinking in LEFT Eigenvectors (no feature selection).")
         } else {
-          message("Elastic net shrinking & selection in LEFT
-                     Eigenvectors.")
+message("Elastic net shrinking & selection in LEFT Eigenvectors.")
         }
       }
-      else if (is.null(nu.u) == FALSE) message("LASSO in LEFT
-                                               Eigenvectors.")
+      else if (is.null(nu.u) == FALSE)
+        message("LASSO in LEFT Eigenvectors.")
     }
   }
 
