@@ -2,7 +2,9 @@
 
 [![Travis build status](https://travis-ci.com/agugonrey/MOSS.svg?branch=master)](https://travis-ci.com/agugonrey/MOSS)
 
-[![CRAN status](https://www.r-pkg.org/badges/version/MOSS)](https://CRAN.R-project.org/package=MOSS)
+[![CRAN status](https://www.r-pkg.org/badges/version/MOSS?color=green)](https://CRAN.R-project.org/package=MOSS)
+
+[![Downloads](http://cranlogs.r-pkg.org/badges/MOSS?color=orange)](http://www.r-pkg.org/pkg/MOSS)
 
 Agustin Gonzalez-Reymundez, Alexander Grueneberg, and Ana I. Vazquez.
 
