@@ -10,10 +10,11 @@ moss(
   norm.arg = TRUE,
   method = "pca",
   resp.block = NULL,
+  covs = NULL,
   K.X = 5,
   K.Y = K.X,
   verbose = TRUE,
-  ncores = 1,
+  nu.parallel = FALSE,
   nu.u = NULL,
   nu.v = NULL,
   alpha.u = 1,
@@ -25,15 +26,14 @@ moss(
   axes.pos = seq_len(K.Y),
   approx.arg = FALSE,
   exact.dg = FALSE,
-  use.fbm = FALSE
+  use.fbm = FALSE,
+  lib.thresh = TRUE
 )
 }
 \arguments{
 \item{data.blocks}{List containing omic blocks of class 'matrix' or
 'FBM'. In
-each block, rows represent subjects and columns features.
- IMPORTANT: omic blocks
-have to be aligned by rows.}
+each block, rows represent subjects and columns features.}
 
 \item{scale.arg}{Should the omic blocks be centered and
 scaled? Logical. Defaults to TRUE.}
@@ -50,6 +50,9 @@ mbpls, pls-lda, mbpls-lda, lrr, mblrr, lrr-lda, mblrr-lda.}
 Only used when the specified
 method is supervised.}
 
+\item{covs}{Covariates which effect we wish to adjust for. Accepts matrix,
+data.frame, numeric, or character vectors.}
+
 \item{K.X}{Number of principal components for predictors.
 Integer. Defaults to 5.}
 
@@ -59,8 +62,7 @@ supervised. Defaults to K.X.}
 \item{verbose}{Should we print messages? Logical.
 Defaults to TRUE.}
 
-\item{ncores}{Number of cores used for sSVD. Only relevant
-when at least one omic block is a FBM. Defaults to 1.}
+\item{nu.parallel}{Tuning degrees of sparsity in parallel. Defaults to FALSE.}
 
 \item{nu.u}{A grid with
 increasing integers representing degrees of sparsity for
@@ -117,6 +119,9 @@ interval and exact.dg = TRUE.}
 
 \item{use.fbm}{Should we treat omic blocks as
 Filed Backed Matrix (FBM)? Logical. Defaults to FALSE.}
+
+\item{lib.thresh}{Should we use a liberal or conservative
+threshold to tune degrees of sparsity? Logical. Defaults to TRUE.}
 }
 \value{
 Returns a list with the results of the sparse SVD.
@@ -130,7 +135,18 @@ Depending of the method used,
 If at least one of the blocks in 'data.blocks' is of class FBM,
  is(B,'FBM') is TRUE.
 Otherwise, is(B,'matrix') is TRUE.
-\item \emph{\strong{dense:}} A list containing the resuls of the
+\item \emph{\strong{Q:}} Matrix with the SVD projections at the 
+level of subjects.
+\item \emph{\strong{selected_items:}} List containing the position, name, and loadings
+of selected features and subjects by latent dimension.
+if 'plot=TRUE', a scatterplot is displayed, where the x-axis
+represents the latent dimensions, the y-axis the total number 
+of features selected in log scale, and each point is a pie chart
+showing the relative contribution of each omic to the number of
+features selected. The radio of the pie-chart represents the 
+coefficient of variation among squared loadings 
+(mean squared loadings divided by their standard deviation)
+\item \emph{\strong{dense:}} A list containing the results of the
  dense SVD.\itemize{
    \item \strong{u:} Matrix with left Eigenvectors.
    \item \strong{v:} Matrix with right Eigenvectors.
@@ -159,8 +175,9 @@ Otherwise, is(B,'matrix') is TRUE.
    as well as
    its first and second empirical derivatives along the degrees of
    sparsity path.
-   \item \strong{PC1_2_plot:} Plot of the first two principal
-   components.
+   \item \strong{PC_plot:} Plot of the first principal
+   components according to axes.pos. By default the first two
+   are plotted.
    \item \strong{tSNE_plot:} Plot with the tSNE mapping onto
     two dimensions.
    \item \strong{clus_plot:} The output of function tsne2clus.
@@ -290,8 +307,8 @@ lab.sub <- sim_data$labels$lab.sub
 lab.feat <- sim_data$labels$lab.feat
 out <- moss(sim_blocks[-4],
   method = "pca",
-  nu.v = seq(1, 200, by = 50),
-  nu.u = seq(1, 100, by = 20),
+  nu.v = seq(1, 200, by = 100),
+  nu.u = seq(1, 100, by = 50),
   alpha.v = 0.5,
   alpha.u = 1
 )
@@ -302,11 +319,11 @@ library(viridis)
 library(cluster)
 library(fpc)
 
-set.seed(43)
+set.seed(42)
 
 # Example2: sparse PCA with t-SNE, clustering, and association with
 # predefined groups of subjects.
-out <- moss(sim_blocks[-4],
+out <- moss(sim_blocks[-4],axes.pos=c(1:5),
   method = "pca",
   nu.v = seq(1, 200, by = 10),
   nu.u = seq(1, 100, by = 2),
@@ -326,8 +343,15 @@ out$clus_plot
 # groups of subjects.
 out$subLabels_vs_PCs
 
+# This shows the contribution of each omic to the features 
+# selected by PC index.
+out$selected_items
+
+# This shows features forming signatures across clusters.
+out$feat_signatures
+
 # Example3: Multi-block PCA with sparsity.
-out <- moss(sim_blocks[-4],
+out <- moss(sim_blocks[-4],axes.pos=1:5,
   method = "mbpca",
   nu.v = seq(1, 200, by = 10),
   nu.u = seq(1, 100, by = 2),
@@ -345,9 +369,9 @@ out$clus_plot
 out$block_weights
 
 # Example4: Partial least squares with sparsity (PLS).
-out <- moss(sim_blocks[-4],
+out <- moss(sim_blocks[-4],axes.pos=1:5,
   K.X = 500,
-  K.Y = 2,
+  K.Y = 5,
   method = "pls",
   nu.v = seq(1, 100, by = 2),
   nu.u = seq(1, 100, by = 2),
@@ -355,13 +379,13 @@ out <- moss(sim_blocks[-4],
   alpha.u = 1,
   tSNE = TRUE,
   cluster = TRUE,
-  clus.lab = lab.feat[1:2e3],
+  clus.lab = lab.sub,
   resp.block = 3,
   plot = TRUE
 )
 out$clus_plot
 
-# Get some measure of accuracy at detecting features with signal
+# Get some measurement of accuracy at detecting features with signal
 # versus background noise.
 table(out$sparse$u[, 1] != 0, lab.feat[1:2000])
 table(out$sparse$v[, 1] != 0, lab.feat[2001:3000])

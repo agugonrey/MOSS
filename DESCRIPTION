@@ -1,11 +1,11 @@
 Package: MOSS
 Title: Multi-Omic Integration via Sparse Singular Value
     Decomposition
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: c(
-    person("Agustin", "Gonzalez-Reymundez", email = "agugonrey@gmail.com", role = c("aut","cre")),
+    person("Agustin", "Gonzalez-Reymundez", email = "agugonrey@gmail.com", role = c("aut","cre","cph")),
     person("Alexander", "Grueneberg", email = "cran@agrueneberg.info", role = c("aut")),
-    person("Ana", "Vazquez", email = "avazquez@msu.edu", role = c("ctb")))
+    person("Ana", "Vazquez", email = "avazquez@msu.edu", role = c("ctb","ths")))
 Description: High dimensionality, noise and heterogeneity among
     samples and features challenge the omic integration task. Here we
     present an omic integration method based on sparse singular value
@@ -28,6 +28,8 @@ Suggests:
     annotate,
     bigparallelr,
     bigstatsr,
+    future.apply,
+    scatterpie,
     clValid,
     ComplexHeatmap,
     fpc,
@@ -40,8 +42,10 @@ Suggests:
     MASS,
     rmarkdown,
     testthat,
-    viridis
+    viridis,
+    spelling
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
+Language: en-US

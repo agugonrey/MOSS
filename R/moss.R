@@ -98,8 +98,6 @@
 #' @param data.blocks List containing omic blocks of class 'matrix' or
 #' 'FBM'. In
 #' each block, rows represent subjects and columns features.
-#'  IMPORTANT: omic blocks
-#' have to be aligned by rows.
 #' @param method Multivariate method. Character.
 #' Defaults to 'pca'. Possible options are pca, mbpca, pca-lda,
 #' mbpca-lda, pls,
@@ -114,8 +112,7 @@
 #' supervised. Defaults to K.X.
 #' @param verbose Should we print messages? Logical.
 #' Defaults to TRUE.
-#' @param ncores Number of cores used for sSVD. Only relevant
-#' when at least one omic block is a FBM. Defaults to 1.
+#' @param nu.parallel Tuning degrees of sparsity in parallel. Defaults to FALSE.
 #' @param nu.u A grid with
 #' increasing integers representing degrees of sparsity for
 #' left Eigenvectors.
@@ -147,6 +144,8 @@
 #' @param axes.pos PC index used for tSNE.
 #' Defaults to 1 : K.Y. Used only when tSNE
 #' is different than NULL.
+#' @param covs Covariates which effect we wish to adjust for. Accepts matrix,
+#' data.frame, numeric, or character vectors.
 #' @param scale.arg Should the omic blocks be centered and
 #' scaled? Logical. Defaults to TRUE.
 #' @param norm.arg Should omic blocks be
@@ -164,6 +163,8 @@
 #' interval and exact.dg = TRUE.
 #' @param use.fbm Should we treat omic blocks as
 #' Filed Backed Matrix (FBM)? Logical. Defaults to FALSE.
+#' @param lib.thresh Should we use a liberal or conservative
+#' threshold to tune degrees of sparsity? Logical. Defaults to TRUE.
 #' @return Returns a list with the results of the sparse SVD.
 #' If \emph{plot}=TRUE, a series of plots is generated as well.
 #' \itemize{
@@ -175,7 +176,18 @@
 #' If at least one of the blocks in 'data.blocks' is of class FBM,
 #'  is(B,'FBM') is TRUE.
 #' Otherwise, is(B,'matrix') is TRUE.
-#' \item \emph{\strong{dense:}} A list containing the resuls of the
+#' \item \emph{\strong{Q:}} Matrix with the SVD projections at the 
+#' level of subjects.
+#' \item \emph{\strong{selected_items:}} List containing the position, name, and loadings
+#' of selected features and subjects by latent dimension.
+#' if 'plot=TRUE', a scatterplot is displayed, where the x-axis
+#' represents the latent dimensions, the y-axis the total number 
+#' of features selected in log scale, and each point is a pie chart
+#' showing the relative contribution of each omic to the number of
+#' features selected. The radio of the pie-chart represents the 
+#' coefficient of variation among squared loadings 
+#' (mean squared loadings divided by their standard deviation)
+#' \item \emph{\strong{dense:}} A list containing the results of the
 #'  dense SVD.\itemize{
 #'    \item \strong{u:} Matrix with left Eigenvectors.
 #'    \item \strong{v:} Matrix with right Eigenvectors.
@@ -204,8 +216,9 @@
 #'    as well as
 #'    its first and second empirical derivatives along the degrees of
 #'    sparsity path.
-#'    \item \strong{PC1_2_plot:} Plot of the first two principal
-#'    components.
+#'    \item \strong{PC_plot:} Plot of the first principal
+#'    components according to axes.pos. By default the first two
+#'    are plotted.
 #'    \item \strong{tSNE_plot:} Plot with the tSNE mapping onto
 #'     two dimensions.
 #'    \item \strong{clus_plot:} The output of function tsne2clus.
@@ -258,8 +271,8 @@
 #' lab.feat <- sim_data$labels$lab.feat
 #' out <- moss(sim_blocks[-4],
 #'   method = "pca",
-#'   nu.v = seq(1, 200, by = 50),
-#'   nu.u = seq(1, 100, by = 20),
+#'   nu.v = seq(1, 200, by = 100),
+#'   nu.u = seq(1, 100, by = 50),
 #'   alpha.v = 0.5,
 #'   alpha.u = 1
 #' )
@@ -270,11 +283,11 @@
 #' library(cluster)
 #' library(fpc)
 #'
-#' set.seed(43)
+#' set.seed(42)
 #'
 #' # Example2: sparse PCA with t-SNE, clustering, and association with
 #' # predefined groups of subjects.
-#' out <- moss(sim_blocks[-4],
+#' out <- moss(sim_blocks[-4],axes.pos=c(1:5),
 #'   method = "pca",
 #'   nu.v = seq(1, 200, by = 10),
 #'   nu.u = seq(1, 100, by = 2),
@@ -293,9 +306,16 @@
 #' # This shows the statistical overlap between PCs and the pre-defined
 #' # groups of subjects.
 #' out$subLabels_vs_PCs
+#' 
+#' # This shows the contribution of each omic to the features 
+#' # selected by PC index.
+#' out$selected_items
+#' 
+#' # This shows features forming signatures across clusters.
+#' out$feat_signatures
 #'
 #' # Example3: Multi-block PCA with sparsity.
-#' out <- moss(sim_blocks[-4],
+#' out <- moss(sim_blocks[-4],axes.pos=1:5,
 #'   method = "mbpca",
 #'   nu.v = seq(1, 200, by = 10),
 #'   nu.u = seq(1, 100, by = 2),
@@ -313,9 +333,9 @@
 #' out$block_weights
 #'
 #' # Example4: Partial least squares with sparsity (PLS).
-#' out <- moss(sim_blocks[-4],
+#' out <- moss(sim_blocks[-4],axes.pos=1:5,
 #'   K.X = 500,
-#'   K.Y = 2,
+#'   K.Y = 5,
 #'   method = "pls",
 #'   nu.v = seq(1, 100, by = 2),
 #'   nu.u = seq(1, 100, by = 2),
@@ -323,13 +343,13 @@
 #'   alpha.u = 1,
 #'   tSNE = TRUE,
 #'   cluster = TRUE,
-#'   clus.lab = lab.feat[1:2e3],
+#'   clus.lab = lab.sub,
 #'   resp.block = 3,
 #'   plot = TRUE
 #' )
 #' out$clus_plot
 #'
-#' # Get some measure of accuracy at detecting features with signal
+#' # Get some measurement of accuracy at detecting features with signal
 #' # versus background noise.
 #' table(out$sparse$u[, 1] != 0, lab.feat[1:2000])
 #' table(out$sparse$v[, 1] != 0, lab.feat[2001:3000])
@@ -346,13 +366,13 @@
 #' }
 #'
 moss <- function(data.blocks, scale.arg = TRUE, norm.arg = TRUE,
-                 method = "pca", resp.block = NULL,
-                 K.X = 5, K.Y = K.X, verbose = TRUE, ncores = 1,
+                 method = "pca", resp.block = NULL,covs=NULL,
+                 K.X = 5, K.Y = K.X, verbose = TRUE, nu.parallel = FALSE,
                  nu.u = NULL, nu.v = NULL,
                  alpha.u = 1, alpha.v = 1, plot = FALSE, cluster = FALSE,
-                 clus.lab = NULL, tSNE = FALSE, axes.pos = seq_len(K.Y),
-                 approx.arg = FALSE,
-                 exact.dg = FALSE, use.fbm = FALSE) {
+                 clus.lab = NULL, tSNE = FALSE, 
+                 axes.pos = seq_len(K.Y),approx.arg = FALSE,
+                 exact.dg = FALSE, use.fbm = FALSE,lib.thresh = TRUE) {
 
   # Inputs need to be a list of data matrices.
   if (!is.list(data.blocks)) stop("Input has to be a list with omic
@@ -391,6 +411,9 @@ have to be 'array', 'matrix',or 'FBM' objects")
 
   # Number of data blocks.
   M <- length(data.blocks)
+  
+  # Only one core for big_svd calculationsw within moss.
+  ncores <- 1
 
   # Is tSNE being passed as logical?
   if (is.logical(tSNE) && (tSNE == FALSE)) tSNE <- NULL
@@ -403,8 +426,40 @@ have to be 'array', 'matrix',or 'FBM' objects")
     is.null(clus.lab) == FALSE) {
     plot <- TRUE
   }
-
-  # Turning omic blocks into FBM.
+  # Checking dimnames.
+  if (grepl(method, pattern = "-lda")) dim.names <- 
+    lapply(data.blocks[-resp.block],dimnames)
+  else dim.names <- 
+    lapply(data.blocks,dimnames)
+  
+  # Get features names.
+  feature.labels <- lapply(dim.names,function(x) x[[2]])
+  
+  if (Reduce("+", lapply(dim.names, function(x) is.null(x[[1]]))) > 1) {
+    warning("Row names missing for at least one omic block.")
+  }
+  else {
+    if (M > 1) {
+      for (l in seq(1, M)) {
+        if(!all.equal(dim.names[[1]][[1]],dim.names[[l]][[1]])) {
+          warning("Row names across omic blocks are inconsistent.")
+        }
+      } 
+    }
+    
+  }
+  # Checking number of rows.
+  n <- unlist(lapply(data.blocks, nrow))
+  
+  if (length(unique(n)) > 1) stop("Different number of rows across omics.")
+  else n <- unique(n)
+    
+  if (sum(vapply(data.blocks, inherits, TRUE, what = "FBM")) == M) 
+    warning("We cannot check consistency among rows names. 
+            Make sure rows across omic blocks represent the same
+            subjects/samples.")
+  
+  # Turning omic blocks into FBM
   if (use.fbm == TRUE) {
     if (!requireNamespace("bigstatsr", quietly = TRUE)) {
       stop("Package 'bigstatsr' needs to be installed to 
@@ -422,11 +477,11 @@ have to be 'array', 'matrix',or 'FBM' objects")
       }
     }
   }
-
+  
   # Checking the class of each data block.
   block.class <- rep("matrix", M)
   block.class[vapply(data.blocks, inherits, TRUE, what = "FBM")] <- "FBM"
-
+  
   # Printing method's name.
   c(
     "Low Rank Regression (LRR)",
@@ -532,12 +587,30 @@ Linear Discriminant Analysis
          for tSNE projection.")
   }
 
-  # Only non-missing data accepted.
-  if (verbose) message("Checking for missing values.")
-  if (any(unlist(lapply(data.blocks, function(x) prepro_na(x) > 0)))) {
-    stop("Needs to imput NA's before runing R")
-  }
+  # Checking for missing data.
+  if (verbose) message("Checking for missing values
+                       Imputing if necessary.")
+  if (grepl(method, pattern = "-lda")) data.blocks[-resp.block] <- 
+    lapply(data.blocks[-resp.block], prepro_na)
+  else data.blocks <- lapply(data.blocks, prepro_na)
 
+  # Should we adjust for a list of covariates?
+  if(!is.null(covs)) {
+    if (verbose) message("Adjusting for covariates effects.\n")
+    if (grepl(method, pattern = "-lda")) {
+      data.blocks[-resp.block] <- cov_adj(data.blocks[-resp.block],
+                                          covs,
+                                          n,
+                                          dim.names)
+    }
+    if (!grepl(method, pattern = "-lda")) {
+      data.blocks <- cov_adj(data.blocks,
+                             covs,
+                             n,
+                             dim.names)
+    }
+  }
+  
   # If method is a supervised one,
   # the first response block is chosen: Y = data.blocks[[1]]
   if (!any(method %in% c("pca", "mbpca"))) {
@@ -561,12 +634,6 @@ Linear Discriminant Analysis
       }
     }
   }
-  if (!grepl(method, pattern = "-lda")) {
-    if (any(lapply(data.blocks, function(x) inherits(x[, 1], "numeric")) ==
-      FALSE)) {
-      stop("All blocks need to have numeric data.")
-    }
-  }
 
   # Naming data blocks if necessary.
   if (is.null(names(data.blocks))) {
@@ -578,7 +645,7 @@ Linear Discriminant Analysis
     tmp <- names(data.blocks) == ""
     names(data.blocks)[tmp] <- paste("Block", seq_len(M))[tmp]
   }
-
+  
   # Standardizing/Normalizing data blocks.
   if (scale.arg == T | norm.arg == T) {
     if (verbose) message("Standardizing/Normalizing data blocks.")
@@ -633,11 +700,11 @@ message("Elastic net shrinking & selection in LEFT Eigenvectors.")
         message("LASSO in LEFT Eigenvectors.")
     }
   }
-
+  
   # No plots displayed for K.X = 1, or K.Y = 1
-  if ((K.Y == 1 | K.X == 1) & plot == T) {
+  if ((K.Y == 1 | K.X == 1) & plot == TRUE) {
     warning("Plots will only be generated for more than ONE laten factor")
-    plot <- F
+    plot <- FALSE
   }
 
   # Getting SVD from chosen method.
@@ -836,9 +903,27 @@ representing
 
   out <- NULL
   out$B <- O
-  n <- nrow(O)
+  
+  # Get subjects projections.
+  if (method %in% c("pls","lrr","mbpls","mblrr")) {
+    if (verbose) 
+      message("Getting subjects projections for response block.")
+    Q <- data.blocks[[1]] %*% svd0$v
+  }
+  else Q <- svd0$u
+  out$Q <- Q
+  n <- nrow(Q)
   out$dense <- SVD_X$SVD
 
+  # Store potential number of dimensions.
+  dsvd_d2 <- c(0, diff(c(0, diff(svd0$d))))
+  th <- which(dsvd_d2 ^ 2 >= mean(dsvd_d2 ^ 2) + stats::sd(dsvd_d2 ^ 2))
+  nf_dsvd_d2 <- ifelse(th[length(th)] + 2 <= K.Y,
+                       th[length(th)] + 2, 
+                       K.Y)
+  out$opt.num.dim <- c("Liberal"=which.min(c(0, diff(svd0$d))),
+                       "Conservative"= nf_dsvd_d2)
+  
   # Scree plot.
   if (plot & K.Y > 2) {
     aux.scree <- data.frame(
@@ -878,33 +963,61 @@ representing
       ggplot2::scale_y_continuous("Eigenvalues\n 
                                                    and derivatives") +
       ggplot2::theme_minimal())
+    
+    
+    
   }
   if (is.null(nu.u) == F | is.null(nu.v) == F) {
     # Sparsity constraints.
     if (verbose) message("Imposing sparsity constraints.")
-    aux.svd <- ssvdEN_sol_path(
-      O = O, svd.0 = svd0,
-      scale = scale.arg, center = scale.arg,
-      dg.grid.right = nu.v, dg.grid.left = nu.u,
-      n.PC = K.Y, alpha.f = alpha.v, alpha.s = alpha.u,
-      plot = plot, approx = approx.arg,
-      verbose = verbose,
-      left.lab = left.lab,
-      right.lab = right.lab,
-      exact.dg = exact.dg
-    )
-
+    
+    if (nu.parallel) {
+      aux.svd <- ssvdEN_sol_path_par(
+        O = O, svd.0 = svd0,
+        scale = scale.arg, center = scale.arg,
+        dg.grid.right = nu.v, dg.grid.left = nu.u,
+        n.PC = K.Y, alpha.f = alpha.v, alpha.s = alpha.u,
+        plot = plot, approx = approx.arg,
+        verbose = verbose,
+        left.lab = left.lab,
+        right.lab = right.lab,
+        exact.dg = exact.dg,
+        lib.thresh = lib.thresh
+      )
+    }
+    else {
+      aux.svd <- ssvdEN_sol_path(
+        O = O, svd.0 = svd0,
+        scale = scale.arg, center = scale.arg,
+        dg.grid.right = nu.v, dg.grid.left = nu.u,
+        n.PC = K.Y, alpha.f = alpha.v, alpha.s = alpha.u,
+        plot = plot, approx = approx.arg,
+        verbose = verbose,
+        left.lab = left.lab,
+        right.lab = right.lab,
+        exact.dg = exact.dg,
+        lib.thresh = lib.thresh
+      )
+    }
     out$sparse <- aux.svd$SVD
+    
+    # Get selected features.
+    out$selected_items <- moss_select(data.blocks = data.blocks,
+                resp.block = resp.block,
+                SVD = out$sparse,
+                K = axes.pos, 
+                plot = plot)
+    
     if (plot) out$tun_dgSpar_plot <- aux.svd$plot
   }
-
+  
   # Get tSNE and/or clusters displays.
   if (plot == TRUE) {
 
     # No tSNE.
     if (is.null(tSNE)) {
       if (is.null(clus.lab)) {
-        aux.name <- rep(left.lab, n)
+        aux.name <- rep("Subjects", n)
       } else {
         aux.name <- clus.lab
       }
@@ -915,7 +1028,8 @@ representing
           out$PC1_2_plot <- tsne2clus(list(Y = scale(svd0$w.x[, 1:2])),
             labels = aux.name,
             aest = aest.f(aux.name),
-            xlab = "LDF1", ylab = "LDF2",
+            xlab = paste0("LDF",1), 
+            ylab = paste0("LDF",2),
             clus = FALSE
           )
         }
@@ -927,12 +1041,13 @@ representing
             cluster$min_clus_size <- 2
           }
           if (verbose) message("Getting clusters via DBSCAN.")
-          out$clus_plot <- tsne2clus(list(Y = scale(svd0$w.x[, 1:2])),
+          out$clus_plot <- tsne2clus(list(Y = scale(svd0$w.x[,1:2])),
             labels = aux.name,
             aest = aest.f(aux.name),
             eps_range = cluster$eps_range,
             eps_res = cluster$eps_res,
-            xlab = "LDF1", ylab = "LDF2",
+            xlab = paste0("LDF",1), 
+            ylab = paste0("LDF",2),
             clus = TRUE,
             min.clus.size = cluster$min_clus_size
           )
@@ -942,10 +1057,11 @@ representing
       # Eigenvectors obtained without LDA.
       else {
         if (is.null(cluster)) {
-          out$PC1_2_plot <- tsne2clus(list(Y = scale(svd0$u[, 1:2])),
+          out$PC1_2_plot <- tsne2clus(list(Y = scale(Q[, axes.pos[1:2]])),
             labels = aux.name,
             aest = aest.f(aux.name),
-            xlab = "PC1", ylab = "PC2",
+            xlab = paste0("PC",axes.pos[1]), 
+            ylab = paste0("PC",axes.pos[2]),
             clus = FALSE
           )
         }
@@ -957,12 +1073,13 @@ representing
             cluster$min_clus_size <- 2
           }
           if (verbose) message("Getting clusters via DBSCAN.")
-          out$clus_plot <- tsne2clus(list(Y = scale(svd0$u[, 1:2])),
+          out$clus_plot <- tsne2clus(list(Y = scale(Q[, axes.pos[1:2]])),
             labels = aux.name,
             aest = aest.f(aux.name),
             eps_range = cluster$eps_range,
             eps_res = cluster$eps_res,
-            xlab = "PC1", ylab = "PC2",
+            xlab = paste0("PC",axes.pos[1]), 
+            ylab = paste0("PC",axes.pos[2]),
             clus = TRUE,
             min.clus.size = cluster$min_clus_size
           )
@@ -980,6 +1097,7 @@ representing
         # If tSNE isn't a list, create it for default arguments.
         if (is.list(tSNE)) {
           tSNE$"Z" <- svd0$w.x
+          tSNE$parallel <- nu.parallel
           tSNE <- do.call(pca2tsne, tSNE)
         }
         else {
@@ -987,13 +1105,13 @@ representing
             "Z" = svd0$w.x,
             "perp" = 50,
             "n.samples" = 1,
-            "n.iter" = 1e3
+            "n.iter" = 1e3, "parallel"=nu.parallel
           ))
         }
 
         # Plot TSNE.
         if (is.null(clus.lab)) {
-          aux.name <- rep(left.lab, n)
+          aux.name <- rep("Subjects", n)
         } else {
           aux.name <- clus.lab
         }
@@ -1014,16 +1132,16 @@ representing
         )
         # Should we cluster left factors after tSNE?
         if (is.null(cluster) == FALSE) {
-          if (is.list(cluster) == FALSE) {
+          if (is.logical(cluster) & cluster) {
             cluster <- NULL
-            cluster$eps_range <- c(0, 4)
+            cluster$eps_range <- c(1, 4)
             cluster$eps_res <- 100
             cluster$min_clus_size <- 2
           }
 
 
           if (is.null(clus.lab)) {
-            aux.name <- rep(left.lab, n)
+            aux.name <- rep("Subjects", n)
           } else {
             aux.name <- clus.lab
           }
@@ -1055,20 +1173,21 @@ representing
       else {
         # If tSNE isn't a list, create it for default arguments.
         if (is.list(tSNE)) {
-          tSNE$"Z" <- svd0$u[, axes.pos]
+          tSNE$"Z" <- Q[, axes.pos]
+          tSNE$parallel <- nu.parallel
           tSNE <- do.call(pca2tsne, tSNE)
         }
         else {
           tSNE <- do.call(pca2tsne, list(
-            "Z" = svd0$u[, axes.pos],
+            "Z" = Q[, axes.pos],
             "perp" = 50, "n.samples" = 1,
-            "n.iter" = 1e3
+            "n.iter" = 1e3,"parallel" = nu.parallel
           ))
         }
 
         # Plot tSNE.
         if (is.null(clus.lab)) {
-          aux.name <- rep(left.lab, n)
+          aux.name <- rep("Subjects", n)
         } else {
           aux.name <- clus.lab
         }
@@ -1102,7 +1221,7 @@ representing
           }
 
           if (is.null(clus.lab)) {
-            aux.name <- rep(left.lab, n)
+            aux.name <- rep("Subjects",  n)
           } else {
             aux.name <- clus.lab
           }
@@ -1180,13 +1299,19 @@ representing
         ggplot2::scale_y_continuous("Weights") +
         ggplot2::geom_line() +
         ggplot2::theme_minimal() +
-        ggplot2::theme(legend.position = "top")
+        ggplot2::theme(legend.position = "top")+
+        ggplot2::guides("col"=ggplot2::guide_legend(title = "Omic",
+                                           title.position = "top",
+                                           title.hjust = 0.5),
+                        "shape"=ggplot2::guide_legend(title = "Omic",
+                                             title.position = "top",
+                                             title.hjust = 0.5) )
     }
 
-    pc.aux <- out$dense$Global$u
+    pc.aux <- Q
   }
   else {
-    pc.aux <- out$dense$u
+    pc.aux <- Q
   }
 
   # Evaluating the overlap between principal components and pre-defined
@@ -1212,15 +1337,16 @@ representing
     # Creating a data.frame to store association between clusters and
     # labels.
     clus.w <- do.call("rbind", lapply(seq_len(ncol(Z)), function(i) {
-      if (is.null(nu.u) == FALSE & alpha.u > 0) {
-        x2.res <- apply(as.matrix(out$sparse$u), 2, function(x) {
+      if (is.null(nu.u) == FALSE & alpha.u > 0 & 
+          !grepl(method, pattern = "pls")) {
+        x2.res <- apply(as.matrix(Q), 2, function(x) {
           suppressWarnings(test <- stats::chisq.test(table(x != 0, Z[, i])))
           return(c("Est" = test$statistic))
         })
       }
 
       else {
-        x2.res <- apply(as.matrix(pc.aux), 2, function(x) {
+        x2.res <- apply(as.matrix(Q), 2, function(x) {
           test <- stats::kruskal.test(x, Z[, i])
           return(c("Est" = test$statistic))
         })
@@ -1256,7 +1382,13 @@ representing
       ggplot2::scale_y_continuous(test.name) +
       ggplot2::geom_line() +
       ggplot2::theme_minimal() +
-      ggplot2::theme(legend.position = "top")
+      ggplot2::theme(legend.position = "top")+
+      ggplot2::guides("col"=ggplot2::guide_legend(title = "Label",
+                                         title.position = "top",
+                                         title.hjust = 0.5),
+                      "shape"=ggplot2::guide_legend(title = "Label",
+                                           title.position = "top",
+                                           title.hjust = 0.5) )
   }
 
   # Evaluating the overlap between principal components and
@@ -1274,10 +1406,20 @@ representing
       if (verbose) message("Evaluating overlap between groups of
 selected subjects and detected clusters.")
     }
-
     clus.lab <- out$clus_plot$dbscan.res$cluster
+    
+    # Getting signatures if sparsity was impossed.
+    if (is.null(nu.u) == F | is.null(nu.v) == F) {
+      if (all(unlist(lapply(feature.labels,
+                            is.null)))) feature.labels <- NULL
+      out$feat_signatures <- 
+        moss_signatures(data.blocks,
+                        out$selected_items,
+                        clus.lab,
+                        plot,
+                        feature.labels)
+    }
     clus.lab[clus.lab == 0] <- NA
-
     forml <- ~ -1 + as.factor(clus.lab)
     Z_mf <- stats::model.frame(forml, na.action = "na.pass")
     Z <- stats::model.matrix(forml, data = Z_mf)
@@ -1286,7 +1428,7 @@ selected subjects and detected clusters.")
     # Creating a data.frame to store association between PCs and clusters.
     clus.w <- do.call("rbind", lapply(seq_len(ncol(Z)), function(i) {
       if (is.null(nu.u) == FALSE & alpha.u > 0) {
-        x2.res <- apply(as.matrix(out$sparse$u), 2, function(x) {
+        x2.res <- apply(as.matrix(Q), 2, function(x) {
           suppressWarnings(test <- stats::chisq.test(table(
             x != 0,
             Z[, i]
@@ -1296,7 +1438,7 @@ selected subjects and detected clusters.")
       }
 
       else {
-        x2.res <- apply(as.matrix(pc.aux), 2, function(x) {
+        x2.res <- apply(as.matrix(Q), 2, function(x) {
           test <- stats::kruskal.test(x, Z[, i])
           return(c("Est" = test$statistic))
         })
@@ -1307,7 +1449,8 @@ selected subjects and detected clusters.")
       return(x2.res)
     }))
 
-    if (is.null(nu.u) == FALSE & alpha.u > 0) {
+    if (is.null(nu.u) == FALSE & alpha.u > 0 & 
+        !grepl(method, pattern = "pls")) {
       test.name <- "Chi-square statistics"
     } else {
       test.name <- "Kruskal-Wallis statistics"
@@ -1331,7 +1474,27 @@ selected subjects and detected clusters.")
       ggplot2::scale_y_continuous(test.name) +
       ggplot2::geom_line() +
       ggplot2::theme_minimal() +
-      ggplot2::theme(legend.position = "top")
+      ggplot2::theme(legend.position = "top")+
+      ggplot2::guides("col"=ggplot2::guide_legend(title = "Cluster",
+                                          title.position = "top",
+                                          title.hjust = 0.5),
+                      "shape"=ggplot2::guide_legend(title = "Cluster",
+                                         title.position = "top",
+                                         title.hjust = 0.5) )
   }
+  else {
+    # Getting signatures if sparsity was impossed.
+    if (is.null(nu.u) == F | is.null(nu.v) == F) {
+      if (all(unlist(lapply(feature.labels,
+                            is.null)))) feature.labels <- NULL
+      out$feat_signatures <- 
+        moss_signatures(data.blocks,
+                        out$selected_items,
+                        NULL,
+                        plot,
+                        feature.labels)
+    }
+  }
+  
   return(out)
 }

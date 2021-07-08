@@ -4,7 +4,7 @@
 \alias{pca2tsne}
 \title{Mapping principal components onto a 2D map via tSNE.}
 \usage{
-pca2tsne(Z, perp = 50, n.samples = 1, n.iter = 1000)
+pca2tsne(Z, perp = 50, n.samples = 1, n.iter = 1000, parallel = FALSE)
 }
 \arguments{
 \item{Z}{A matrix with axes of variation (typically PCs) as columns
@@ -15,7 +15,10 @@ and subjects as rows.}
 \item{n.samples}{Number of times the algorithm starts from 
 different random initial conditions. Defaults to 1.}
 
-\item{n.iter}{Number of iterations for each run of the algorithm.
+\item{n.iter}{Number of iterations for each run of the algorithm.}
+
+\item{parallel}{Should random starts be done in parallel? Logical. 
+Default to FALSE.
 Defaults to 1000.}
 }
 \value{
@@ -38,10 +41,14 @@ library("MOSS")
 sim_blocks <- simulate_data()$sim_blocks
 
 # Example of pca2tsne usage.
-Z <- pca2tsne(sim_blocks$`Block 3`, perp = 50, n.samples = 1, n.iter = 1e3)$Y
+Z <- pca2tsne(sim_blocks$`Block 3`, 
+              perp = 50, 
+              n.samples = 1,
+              n.iter = 1e3)$Y
 plot(Z, xlab = "x_tSNE(X)", ylab = "y_tSNE(X)")
 \donttest{
 # Example of usage within moss.
+set.seed(34)
 moss(sim_blocks[-4],
   tSNE = list(
     perp = 50,

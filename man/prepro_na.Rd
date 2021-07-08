@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepro_na.R
 \name{prepro_na}
 \alias{prepro_na}
-\title{Number of missing values within a matrix.}
+\title{Missing values imputation by the mean of each column.}
 \usage{
 prepro_na(X)
 }
@@ -10,12 +10,12 @@ prepro_na(X)
 \item{X}{An object of class 'matrix', 'FBM', or 'array'.}
 }
 \value{
-Returns total number of missing values in X.
+Returns input with imputed missing values.
 }
 \description{
-This function is called by moss to count the number of missing values
- within the (extended) matrices.
+This function is called by moss to count the impute missing values
+by the mean of each column within omic blocks.
 }
 \details{
-Ment for objects of class 'matrix', 'FBM', or 'array'.
+Meant for objects of class 'matrix', 'FBM', or 'array'.
 }

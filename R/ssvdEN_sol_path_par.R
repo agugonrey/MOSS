@@ -1,30 +1,11 @@
-#' 'Solution path' for sparse Singular Value Decomposition via Elastic Net.
+#' 'Solution path' for sparse Singular Value Decomposition via Elastic Net
+#' using parallel computing.
 #'
-#' This function allows to explore values on the solution path of the
-#' sparse singular value decomposition (SVD) problem.
-#' The goal of this is to tune the degree of sparsity of subjects,
-#' features, or both subjects/features.
-#' The function performs a penalized SVD that imposes sparsity/smoothing
-#' in both left and right singular vectors.
-#' The penalties at both levels are Elastic Net-like,
-#' and the trade-off between ridge and Lasso like penalties is controlled
-#' by two 'alpha' parameters. The proportion of variance explained is
-#'  the criteria used to choose the optimal degrees of sparsity.
-#'
-#' The function returns the degree of sparsity for which the change in PEV
-#' is the steepest ('liberal' option), or for which the change in PEV 
-#' stabilizes ('conservative' option).
-#' This heuristics relax the need of tuning parameters on a testing set.
-#'
-#' For one PC (rank 1 case), the algorithm finds vectors u, w that minimize:
-#'    ||x - u w'||_F^2 + lambda_w (alpha_w||w||_1 + (1 - alpha_w)||w||_F^2)
-#'    +
-#'     lambda_u (alpha||u||_1 + (1 - alpha_u)||u||_F^2)
-#' such that ||u|| = 1. The right Eigen vector is obtained
-#' from v = w / ||w|| and the corresponding Eigen value = u^T x v.
-#' The penalties lambda_u and lambda_w are mapped from specified
-#' desired degrees of sparsity (dg.spar.features & dg.spar.subjects).
-#'
+#' This function is a copy of 'ssvdEN_sol_path' meant to be used
+#' in combination with the future.apply package to allow for
+#' parallel computing of the optimal degrees of sparsity by
+#' subjects and/or features.
+#' 
 #' @note Although the degree of sparsity maps onto number of
 #' features/subjects for Lasso, the user needs to be aware that
 #' this conceptual correspondence
@@ -74,40 +55,25 @@
 #'  interval and exact.dg = TRUE.
 #' @param lib.thresh Should we use a liberal or conservative
 #' threshold to tune degrees of sparsity? Logical. Defaults to TRUE.
-
-#' @return \itemize{
-#' A list with the results of the (sparse) SVD and (if argument 'plot'=TRUE)
-#'  the corresponding graphical displays.
-#' \item SVD: a list with the results of the (sparse) SVD, containing:
-#'  \itemize{
-#'    \item u: Matrix with left eigenvectors.
-#'    \item v: Matrix with right eigenvectors.
-#'    \item d: Matrix with singular values.
-#'    \item opt.dg.right: Selected degrees of sparsity for right eigenvectors.
-#'    \item opt.dg.left: Selected degrees of sparsity for left eigenvectors.
-#'  }
-#' \item plot: A ggplot object.
-#' }
-#' @references
-#'  \itemize{
-#'    \item Shen, Haipeng, and Jianhua Z. Huang. 2008. Sparse Principal
-#'    Component Analysis via Regularized Low Rank Matrix Approximation.
-#'    Journal of Multivariate Analysis 99 (6).
-#'    \item Baglama, Jim, Lothar Reichel, and B W Lewis. 2018.
-#'    Irlba: Fast Truncated Singular Value Decomposition and Principal
-#'    Components Analysis for Large Dense and Sparse Matrices.
-#'  }
 #' @export
 #' @examples
+#'\donttest{
 #' library("MOSS")
 #'
 #' # Extracting simulated omic blocks.
 #' sim_blocks <- simulate_data()$sim_blocks
 #' X <- sim_blocks$`Block 3`
 #'
-#' # Tuning sparsity degree for features (increments of 20 units).
-#' out <- ssvdEN_sol_path(X, dg.grid.right = seq(1, 1000, by = 20))
-ssvdEN_sol_path <- function(O, center = TRUE, scale = TRUE,
+#' # Comparing ssvdEN_sol_path_par and ssvdEN_sol_path.
+#' t1 <- proc.time()
+#' out1 <- ssvdEN_sol_path(X, dg.grid.right = 1:1000, dg.grid.left = 1:500)
+#' t1 <- proc.time() - t1
+#' 
+#' t2 <- proc.time()
+#' out2 <- ssvdEN_sol_path_par(X, dg.grid.right = 1:1000, dg.grid.left = 1:500)
+#' t2 <- proc.time() - t2
+#' }
+ssvdEN_sol_path_par <- function(O, center = TRUE, scale = TRUE,
                             dg.grid.right = seq_len(ncol(O)) - 1,
                             dg.grid.left = NULL,
                             n.PC = 1, svd.0 = NULL,
@@ -119,19 +85,23 @@ ssvdEN_sol_path <- function(O, center = TRUE, scale = TRUE,
                             right.lab = "Features",
                             exact.dg = FALSE) {
 
-  # Checking if the right packages are present to handle approximated SVDs.
-  if (approx == TRUE) {
-    if (inherits(O, "FBM") == TRUE) {
-      if (!requireNamespace("bigstatsr", quietly = TRUE)) {
-        stop("Package bigstatsr needs to be installed to handle FBM objects.")
-      }
+  # Checking if the right packages.
+  if (!requireNamespace("future.apply", quietly = TRUE)) {
+    stop("Package future.apply needs to be installed to perform parallel
+         computing.")
+  }
+  
+  if (inherits(O, "FBM") == TRUE) {
+    if (!requireNamespace("bigstatsr", quietly = TRUE)) {
+      stop("Package bigstatsr needs to be installed to handle FBM objects.")
     }
-    else {
+    if (approx == FALSE) approx <- TRUE
+  }
+  else {
       if (!requireNamespace("irlba", quietly = TRUE)) {
         stop("Package irlba needs to be installed to get 
            fast truncated SVD solutions.")
       }
-    }
   }
 
   if (any(vapply(c("matrix", "array", "FBM"),
@@ -176,7 +146,8 @@ ssvdEN_sol_path <- function(O, center = TRUE, scale = TRUE,
           ),
           k = n.PC, ncores = ncores
         )
-      } else {
+      } 
+      else {
         O <- scale(O, center = center, scale = scale)
         s <- irlba::irlba(O, nu = n.PC, nv = n.PC)[c("u", "v", "d")]
       }
@@ -201,7 +172,7 @@ ssvdEN_sol_path <- function(O, center = TRUE, scale = TRUE,
   PEV <- NULL
   if (n.s > 1) {
     # Getting proportion of explained variance by degree of sparsity.
-    pev <- do.call("c", lapply(1:n.s, function(i) {
+    pev <- do.call("c", future.apply::future_lapply(1:n.s, function(i) {
       if (verbose) {
         cat(paste0(
           "Tuning ",
@@ -249,7 +220,6 @@ ssvdEN_sol_path <- function(O, center = TRUE, scale = TRUE,
                            max(dg.grid.left))
       opt.dg.left <- dg.grid.left[nf_dsvd_d2]
     }
-    
   }
   # If a single or no value for dg of spar for subjects is given...
   else {
@@ -258,7 +228,7 @@ ssvdEN_sol_path <- function(O, center = TRUE, scale = TRUE,
 
   if (n.f > 1) {
     # Getting proportion of explained variance by degree of sparsity.
-    pev <- do.call("c", lapply(1:n.f, function(j) {
+    pev <- do.call("c", future.apply::future_lapply(1:n.f, function(j) {
       if (verbose) {
         cat(paste0(
           "Tuning ", right.lab,

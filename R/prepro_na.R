@@ -1,11 +1,11 @@
-#' Number of missing values within a matrix.
+#' Missing values imputation by the mean of each column.
 #'
-#' This function is called by moss to count the number of missing values
-#'  within the (extended) matrices.
+#' This function is called by moss to count the impute missing values
+#' by the mean of each column within omic blocks.
 #'
-#' Ment for objects of class 'matrix', 'FBM', or 'array'.
+#' Meant for objects of class 'matrix', 'FBM', or 'array'.
 #' @param X An object of class 'matrix', 'FBM', or 'array'.
-#' @return Returns total number of missing values in X.
+#' @return Returns input with imputed missing values.
 #' @export
 prepro_na <- function(X) {
   if (any(vapply(
@@ -13,20 +13,31 @@ prepro_na <- function(X) {
     function(x) inherits(X, x), TRUE
   ))) {
     if (inherits(X, "FBM") == TRUE) {
-      na_count <- sum(bigstatsr::big_apply(X, function(x, ind) {
-        sum(is.na(x[, ind]))
-      },
-      a.combine = "c",
-      ind = seq_len(ncol(X)),
-      block.size = bigstatsr::block_size(ncol(X), 1)
-      ))
+      bigstatsr::big_apply(X, function(X, ind) {
+        # access a subset of columns as a standard R matrix
+        X.sub <- X[, ind, drop = FALSE]
+        # get the location (i, j) of missing values
+        ind_na <- which(is.na(X.sub), arr.ind = TRUE)
+        # compute the corresponding mean for each column j
+        means <- colMeans(X.sub, na.rm = TRUE)[ind_na[, 2]]
+        # update j (relative to subset) to global 'ind'
+        ind_na[, 2] <- ind[ind_na[, 2]]
+        # fill positions with corresponding means
+        X[ind_na] <- means
+        # here we don't want to return anything, so `NULL`
+        NULL
+      }, a.combine = 'c')
     }
     else {
-      na_count <- sum(apply(X, 2, function(x) sum(is.na(x))))
+      X <- apply(X, 2, function(x) {
+        tmp <- is.na(x)
+        x[tmp] <- mean(x,na.rm = T)
+        x
+        })
     }
   }
   else {
     stop("Only objects of class 'array', 'matrix' or 'FBM' supported.")
   }
-  return(na_count)
+  return(X)
 }
