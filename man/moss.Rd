@@ -319,7 +319,7 @@ library(viridis)
 library(cluster)
 library(fpc)
 
-set.seed(42)
+set.seed(43)
 
 # Example2: sparse PCA with t-SNE, clustering, and association with
 # predefined groups of subjects.
