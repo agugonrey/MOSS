@@ -1,7 +1,7 @@
 Package: MOSS
 Title: Multi-Omic Integration via Sparse Singular Value
     Decomposition
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: c(
     person("Agustin", "Gonzalez-Reymundez", email = "agugonrey@gmail.com", role = c("aut","cre","cph")),
     person("Alexander", "Grueneberg", email = "cran@agrueneberg.info", role = c("aut")),
