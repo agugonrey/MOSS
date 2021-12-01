@@ -1,3 +1,13 @@
+## version 0.2.1
+
+---
+
+### Bugs fixed.
+-cov.adj: in this update cov.adj allows to have missing values in covariates.
+Also, when used outside of $moss$, the omic block to adjust can also contain
+missing values.
+
+
 ## version 0.2.0
 
 ---
