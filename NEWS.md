@@ -7,6 +7,8 @@
 Also, when used outside of $moss$, the omic block to adjust can also contain
 missing values.
 
+### New function.
+-moss_venn.
 
 ## version 0.2.0
 
@@ -24,7 +26,7 @@ missing values.
 - Bi-cluster representations using 'ComplexHeatmap'.
 
 ### New functions.
-- moss_select
+- moss_select.
 - moss_signatures.
 - moss_heatmap.
 - cov_adj.

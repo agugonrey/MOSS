@@ -43,7 +43,9 @@ Suggests:
     rmarkdown,
     testthat,
     viridis,
-    spelling
+    spelling,
+    VennDiagram,
+    grid
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
