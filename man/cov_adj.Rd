@@ -25,7 +25,8 @@ Returns the covariates-adjusted elements in data.blocks.
 }
 \description{
 This function is called by moss to adjust a series of omic 
-blocks for covariates effects.
+blocks for covariates effects. However, if the covariates object
+is too big, the user is recommended to call cov_adj ahead of moss.
 }
 \examples{
 library("MOSS")
