@@ -1,7 +1,8 @@
 #' Adjust omic blocks for covariates effects.
 #'
 #' This function is called by moss to adjust a series of omic 
-#' blocks for covariates effects.
+#' blocks for covariates effects. However, if the covariates object
+#' is too big, the user is recommended to call cov_adj ahead of moss.
 #' @param data.blocks List containing omic blocks of class 'matrix' or
 #' 'FBM'. In each block, rows represent subjects and columns features.
 #' @param covs Covariates which effect we wish to adjust for. 
