@@ -1,8 +1,10 @@
 ## MOSS: Multi-omic integration via sparse singular value decomposition.
 
-[![CRAN status](https://www.r-pkg.org/badges/version/MOSS?color=green)](https://CRAN.R-project.org/package=MOSS)
-
-[![Downloads](http://cranlogs.r-pkg.org/badges/MOSS?color=blue)
+[![CRAN status](https://www.r-pkg.org/badges/version/MOSS?color=orange)](https://CRAN.R-project.org/package=MOSS)
+![Travis-CI Build Status](https://app.travis-ci.com/agugonrey/MOSS.svg?branch=master)
+[![CRAN checks](https://cranchecks.info/badges/worst/MOSS)](https://cran.r-project.org/web/checks/check_results_MOSS.html)
+![Downloads](http://cranlogs.r-pkg.org/badges/MOSS?color=blue) 
+![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/MOSS?color=blue)
 
 Agustin Gonzalez-Reymundez, Alexander Grueneberg, and Ana I. Vazquez.
 
