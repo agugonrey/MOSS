@@ -15,6 +15,7 @@ Returns input with imputed missing values.
 \description{
 This function is called by moss to count the impute missing values
 by the mean of each column within omic blocks.
+If any column has more than 20% missing values an error is displayed.
 }
 \details{
 Meant for objects of class 'matrix', 'FBM', or 'array'.

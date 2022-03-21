@@ -1,3 +1,13 @@
+## version 0.2.2
+
+---
+### Updates.
+Manuscript accepted in "Oxford Bioinformatics".
+
+### Bugs fixed.
+-prepro_na: An error is displayed if any features contains more than 20%
+of missing data.
+
 ## version 0.2.1
 
 ---
