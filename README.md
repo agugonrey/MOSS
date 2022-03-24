@@ -36,6 +36,9 @@ help(moss)
 ```
 
   For more documentation, see:
-[supplementary information for Gonzalez-Reymundez et al (2022)](https://github.com/agugonrey/GonzalezReymundez2021) 
+
+[supplementary information for Gonzalez-Reymundez et al (2022)](https://github.com/agugonrey/GonzalezReymundez2021)
+
 and
+
 [vignette](https://github.com/agugonrey/MOSS/blob/master/inst/MOSS_working_example.pdf). 
