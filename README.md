@@ -22,6 +22,11 @@ install_github("agugonrey/MOSS")
 library("MOSS")
 ```
 
+### Article
+
+[MOSS: Multi-omic integration with Sparse Value Decomposition](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btac179/6553658?login=true)
+
+
 ### Documentation.
 
   For a description of the package's main function. 

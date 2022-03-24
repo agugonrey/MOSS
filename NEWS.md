@@ -2,7 +2,8 @@
 
 ---
 ### Updates.
-Manuscript accepted in "Oxford Bioinformatics".
+Manuscript accepted in [Bioinformatics](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btac179/6553658?login=true).
+
 
 ### Bugs fixed.
 -prepro_na: An error is displayed if any features contains more than 20%
