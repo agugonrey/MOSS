@@ -15,7 +15,7 @@ Description: High dimensionality, noise and heterogeneity among
     using Elastic Net type of shrinkage, and c. allowing both linear and
     non-linear projections (via t-Stochastic Neighbor Embedding) of the
     omic data to detect clusters in very convoluted data
-    (Gonzalez-Reymundez et. al, 2022) <https://doi.org/10.1093/bioinformatics/btac179>.
+    (Gonzalez-Reymundez et. al, 2022) <doi:10.1093/bioinformatics/btac179>.
 License: GPL-2
 URL: https://github.com/agugonrey/MOSS
 BugReports: https://github.com/agugonrey/MOSS/issues
