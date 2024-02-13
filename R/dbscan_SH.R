@@ -1,8 +1,10 @@
-# Function to infer clusters separation using the sillouthe index
+# Function to infer clusters separation using the silhouette index
 # (from Taskesen et al).
 dbscan_SH <- function(data, eps = NULL,
                       prop_outliers = 0.1,
-                      eps_res = 500, eps_range = NULL) {
+                      eps_res = 500, 
+                      verbose = TRUE,
+                      eps_range = NULL) {
   data <- data.frame(data)
   if (is.null(eps)) {
     cat("Optimising eps: \n")
@@ -17,7 +19,7 @@ dbscan_SH <- function(data, eps = NULL,
       eps <- epsvec[i]
       DBcl <- dbscan::dbscan(data, eps)
       cl <- DBcl$cluster
-      cat("  Tuning cluster partition: iteration", i, "of", length(epsvec), "\n")
+      if (verbose) cat("  Tuning cluster partition: iteration", i, "of", length(epsvec), "\n")
       if (all(cl == 1)) {
         break
       } else if (max(cl) == 1) {
